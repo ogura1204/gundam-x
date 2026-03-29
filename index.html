@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MS COCKPIT UI - G-CON ADVANCED SYSTEM</title>
+    <title>MS COCKPIT UI - G-CON 3D ADVANCED SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,6 +16,7 @@
             --ui-orange-glow: rgba(255, 170, 0, 0.8);
             --bg-dark: #030508;
             --panel-bg: rgba(10, 15, 20, 0.9);
+            --panel-border: rgba(0, 243, 255, 0.3);
         }
 
         /* ページ全体の固定化（スクロール完全禁止） */
@@ -45,54 +46,58 @@
             #cockpit-wrapper { display: none !important; }
         }
 
-        /* コックピットレイアウト */
+        /* コックピットレイアウト（立体感） */
         #cockpit-wrapper {
             display: grid;
-            grid-template-rows: 12vh 63vh 25vh;
-            grid-template-columns: 20vw 60vw 20vw;
+            grid-template-rows: 10vh 65vh 25vh;
+            grid-template-columns: 25vw 50vw 25vw;
             width: 100vw; height: 100vh;
             position: relative;
             background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.9) 100%);
-            animation: bootUp 2s ease-out forwards;
+            perspective: 2000px; /* 立体感のための遠近法 */
+            animation: bootUp 2.5s ease-out forwards;
         }
 
         @keyframes bootUp {
-            0% { filter: brightness(0); transform: scale(0.95); }
-            50% { filter: brightness(1.5) contrast(1.2); }
-            100% { filter: brightness(1) contrast(1); transform: scale(1); }
+            0% { filter: brightness(0); transform: scale(0.9) rotateX(10deg); }
+            50% { filter: brightness(1.6) contrast(1.3); }
+            100% { filter: brightness(1) contrast(1); transform: scale(1) rotateX(0deg); }
         }
 
-        /* パネル共通スタイル */
+        /* パネル共通スタイル（立体感・影） */
         .panel {
             background: var(--panel-bg);
-            border: 2px solid rgba(0, 243, 255, 0.2);
-            box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.05);
-            backdrop-filter: blur(15px);
+            border: 2px solid var(--panel-border);
+            box-shadow: inset 0 0 40px rgba(0, 243, 255, 0.1), 0 0 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
             position: relative;
             overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
         }
 
         .panel::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--ui-cyan); box-shadow: 0 0 15px var(--ui-cyan);
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--ui-cyan); box-shadow: 0 0 20px var(--ui-cyan);
         }
 
         /* 上部HUD */
         #hud-top {
             grid-column: 1 / 4; grid-row: 1 / 2;
             display: flex; justify-content: space-between; align-items: flex-start;
-            padding: 10px 40px; border-bottom: none;
-            clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 15% 100%, 0 70%);
-            background: linear-gradient(180deg, rgba(0,243,255,0.08) 0%, transparent 100%);
+            padding: 5px 40px; border-bottom: none;
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 88% 100%, 12% 100%, 0 80%);
+            background: linear-gradient(180deg, rgba(0,243,255,0.1) 0%, transparent 100%);
+            z-index: 100;
         }
 
-        /* メインモニター（中央） */
+        /* メインモニター（中央・奥） */
         #main-monitor {
             grid-column: 2 / 3; grid-row: 2 / 3;
-            margin: 0 15px;
-            border: 2px solid var(--ui-cyan);
-            box-shadow: 0 0 50px rgba(0,243,255,0.15);
-            position: relative;
+            margin: 0 20px;
+            border: 3px solid var(--ui-cyan);
+            box-shadow: 0 0 60px rgba(0,243,255,0.2);
+            transform: translateZ(-100px); /* 奥に配置 */
+            z-index: 50;
         }
         
         #main-video {
@@ -104,53 +109,86 @@
         .target-reticle {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 50vh; height: 50vh;
-            border: 3px dashed rgba(0, 243, 255, 0.4);
+            width: 60vh; height: 60vh;
+            border: 4px dashed rgba(0, 243, 255, 0.4);
             border-radius: 50%;
-            animation: rotateTarget 12s linear infinite;
+            animation: rotateTarget 15s linear infinite;
             pointer-events: none;
         }
         .target-reticle::before, .target-reticle::after {
             content: ''; position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 5vh; height: 5vh; border: 3px solid rgba(0, 243, 255, 0.6);
+            width: 6vh; height: 6vh; border: 4px solid rgba(0, 243, 255, 0.6);
             border-radius: 50%;
         }
-        .target-reticle::after { width: 1.5vh; height: 1.5vh; background: rgba(0, 243, 255, 0.3); }
+        .target-reticle::after { width: 2vh; height: 2vh; background: rgba(0, 243, 255, 0.3); }
 
         @keyframes rotateTarget { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* サブモニター（左：機体ステータス・計器） */
-        #sub-monitor-left {
-            grid-column: 1 / 2; grid-row: 2 / 3;
-            margin-left: 15px;
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 25% 100%, 0 85%);
+        /* キーボードコンソール（立体的なコンソールデスク） */
+        .keyboard-console {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px;
             padding: 20px;
-            display: flex; flex-direction: column; gap: 15px;
+            z-index: 70;
+            transform-origin: center;
+        }
+
+        /* 左キーボードコンソール（左・手前・内側に傾く） */
+        #left-console {
+            grid-column: 1 / 2; grid-row: 2 / 3;
+            margin-left: 20px;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 85%);
+            transform: rotateY(15deg) translateZ(50px); /* 手前・内側に傾ける */
         }
         
-        #sub-img-left {
-            width: 100%; height: auto; object-fit: contain;
-            filter: hue-rotate(180deg) brightness(1.3) contrast(1.6);
-            transition: all 0.5s;
-        }
-
-        /* サブモニター（右：レーダー・通信・段数） */
-        #sub-monitor-right {
+        /* 右キーボードコンソール（右・手前・内側に傾く） */
+        #right-console {
             grid-column: 3 / 4; grid-row: 2 / 3;
-            margin-right: 15px;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 75% 100%, 0 100%);
-            padding: 20px;
-            display: flex; flex-direction: column; gap: 15px;
+            margin-right: 20px;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 70% 100%, 0 100%);
+            transform: rotateY(-15deg) translateZ(50px); /* 手前・内側に傾ける */
         }
 
-        /* コンソールパネル（下部：ボタン・エネルギー） */
+        /* 立体的なキーボードボタン */
+        .key-btn {
+            background: rgba(0,0,0,0.8);
+            border: 2px solid var(--panel-border);
+            color: var(--ui-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem; font-weight: bold;
+            padding: 10px; text-align: center;
+            cursor: pointer; text-transform: uppercase;
+            position: relative; overflow: hidden;
+            transition: all 0.1s ease-out;
+            box-shadow: 0 4px rgba(0,243,255,0.2), 0 0 10px rgba(0,0,0,0.5);
+            transform: translateZ(10px); /* 少し浮き上がらせる */
+        }
+
+        .key-btn::after {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle, var(--ui-cyan-glow) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.1s;
+        }
+
+        /* キーボード入力時の反応アニメーション（押し込まれ、赤く光る） */
+        .key-btn.active {
+            background: rgba(255, 0, 60, 0.2);
+            border-color: var(--ui-red);
+            color: var(--ui-red);
+            transform: translateZ(0px) translateY(4px); /* 押し込まれる */
+            box-shadow: 0 0px rgba(0,243,255,0.2), 0 0 20px var(--ui-red-glow);
+        }
+        .key-btn.active::after { opacity: 0.3; background: radial-gradient(circle, var(--ui-red-glow) 0%, transparent 70%);}
+
+        /* コンソールパネル（下部・手前・エネルギー・主要モード） */
         #console-panel {
             grid-column: 1 / 4; grid-row: 3 / 4;
             display: grid; grid-template-columns: 25vw 50vw 25vw;
-            background: linear-gradient(0deg, rgba(0,243,255,0.08) 0%, transparent 100%);
-            border-top: 2px solid var(--ui-cyan);
+            background: linear-gradient(0deg, rgba(0,243,255,0.1) 0%, transparent 100%);
+            border-top: 3px solid var(--ui-cyan);
             padding: 10px 40px;
+            transform: rotateX(-10deg) translateZ(100px); /* 手前・内側に傾ける */
+            z-index: 90;
         }
 
         /* アニメーションボタン */
@@ -159,31 +197,31 @@
             border: 2px solid var(--ui-cyan);
             color: var(--ui-cyan);
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem; font-weight: bold;
+            font-size: 1.4rem; font-weight: bold;
             padding: 20px 40px;
             cursor: pointer;
             text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
             transition: all 0.2s;
-            clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+            clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+            box-shadow: 0 5px rgba(0,243,255,0.3), 0 0 15px rgba(0,0,0,0.5);
         }
 
         .cockpit-btn:hover, .cockpit-btn.active {
             background: var(--ui-cyan);
             color: #000;
-            box-shadow: 0 0 25px var(--ui-cyan-glow);
-            transform: scale(1.03);
+            box-shadow: 0 0px rgba(0,243,255,0.3), 0 0 30px var(--ui-cyan-glow);
+            transform: scale(1.03) translateY(5px);
         }
 
         .cockpit-btn.danger { border-color: var(--ui-red); color: var(--ui-red); }
         .cockpit-btn.danger:hover, .cockpit-btn.danger.active {
-            background: var(--ui-red); color: #fff; box-shadow: 0 0 25px var(--ui-red-glow);
+            background: var(--ui-red); color: #fff; box-shadow: 0 0 30px var(--ui-red-glow);
         }
 
         .cockpit-btn.warning { border-color: var(--ui-orange); color: var(--ui-orange); }
         .cockpit-btn.warning:hover, .cockpit-btn.warning.active {
-            background: var(--ui-orange); color: #fff; box-shadow: 0 0 25px var(--ui-orange-glow);
+            background: var(--ui-orange); color: #fff; box-shadow: 0 0 30px var(--ui-orange-glow);
         }
 
         /* データスクロールアニメーション */
@@ -250,7 +288,7 @@
     <div id="cockpit-wrapper">
         
         <div id="hud-top">
-            <div style="font-size: 1.8rem; font-family: 'Orbitron'; font-weight: 900; color: var(--ui-cyan);">SYS_G-CON <span style="font-size: 1rem; color:#fff;">v2.1.0</span></div>
+            <div style="font-size: 1.8rem; font-family: 'Orbitron'; font-weight: 900; color: var(--ui-cyan);">SYS_G-CON <span style="font-size: 1rem; color:#fff;">v3.0.0 3D</span></div>
             <div style="font-size: 2.5rem; font-family: 'Orbitron'; font-weight: 900; color: #fff;">GX-9900</div>
             <div style="text-align: right; color: var(--ui-orange);">
                 ALERT STATUS: <span id="alert-status">NORMAL</span><br>
@@ -258,15 +296,18 @@
             </div>
         </div>
 
-        <div id="sub-monitor-left" class="panel">
-            <h3 style="border-bottom: 1px solid var(--ui-cyan); margin-bottom: 10px;">TACTICAL DATA</h3>
-            <img id="sub-img-left" src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100" alt="Tactical map">
-            <div class="data-stream">
+        <div id="left-console" class="panel keyboard-console">
+            <img id="sub-img-left" src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100" alt="Tactical map" style="grid-column: 1 / 7; width: 100%; height: auto; object-fit: contain; filter: hue-rotate(180deg) brightness(1.3) contrast(1.6); transition: all 0.5s;">
+            <div class="data-stream" style="grid-column: 1 / 7;">
                 <span>> SPEED: <span id="speed">12500</span> km/h</span>
                 <span>> ALTITUDE: <span id="altitude">3500</span> m</span>
-                <span>> FUEL: <span id="fuel">98</span>%</span>
                 <span>> REACT TEMP: <span id="react-temp">450</span>°C</span>
             </div>
+            <div class="key-btn" data-key="1">1</div><div class="key-btn" data-key="2">2</div><div class="key-btn" data-key="3">3</div><div class="key-btn" data-key="4">4</div><div class="key-btn" data-key="5">5</div><div class="key-btn" data-key="6">6</div>
+            <div class="key-btn" data-key="q">Q</div><div class="key-btn" data-key="w">W</div><div class="key-btn" data-key="e">E</div><div class="key-btn" data-key="r">R</div><div class="key-btn" data-key="t">T</div><div class="key-btn" data-key="Tab">Tab</div>
+            <div class="key-btn" data-key="a">A</div><div class="key-btn" data-key="s">S</div><div class="key-btn" data-key="d">D</div><div class="key-btn" data-key="f">F</div><div class="key-btn" data-key="g">G</div><div class="key-btn" data-key="CapsLock">Caps</div>
+            <div class="key-btn" data-key="z">Z</div><div class="key-btn" data-key="x">X</div><div class="key-btn" data-key="c">C</div><div class="key-btn" data-key="v">V</div><div class="key-btn" data-key="b">B</div><div class="key-btn" data-key="Shift">Shift</div>
+            <div class="key-btn" data-key="Control">Ctrl</div><div class="key-btn" data-key="Alt">Alt</div><div class="key-btn" data-key=" " style="grid-column: 3 / 7;">Space (L)</div>
         </div>
 
         <div id="main-monitor" class="panel">
@@ -275,27 +316,27 @@
             </video>
             <div class="target-reticle" id="reticle"></div>
             <div style="position: absolute; top: 20px; left: 20px; padding: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--ui-cyan-dim);">MAIN MONITOR</div>
-            <div style="position: absolute; bottom: 20px; left: 20px; font-size: 2rem; font-family: 'Orbitron'; text-shadow: 3px 3px #000;">
+            <div style="position: absolute; bottom: 20px; left: 20px; font-size: 2.2rem; font-family: 'Orbitron'; text-shadow: 4px 4px #000;">
                 MODE: <span id="mode-display" style="color:#fff;">CRUISE</span>
             </div>
             <div style="position: absolute; top: 20px; right: 20px; padding: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--ui-cyan-dim);">TARGET DIST: <span id="target-dist">12000</span>m</div>
         </div>
 
-        <div id="sub-monitor-right" class="panel">
-            <h3 style="border-bottom: 1px solid var(--ui-cyan); margin-bottom: 10px;">WEAPON & RADAR</h3>
-            <div style="font-size: 1rem;">ACTIVE WEAPON: <span id="active-weapon" style="color:#fff;">BEAM SWORD</span></div>
-            <div style="font-size: 1.3rem;">AMMO: <span id="ammo-count">N/A</span> / <span id="ammo-total">N/A</span></div>
-            <div id="radar">
+        <div id="right-console" class="panel keyboard-console">
+            <h3 style="grid-column: 1 / 7; border-bottom: 1px solid var(--ui-cyan); margin-bottom: 5px; font-size: 1.2rem;">WEAPON & RADAR</h3>
+            <div style="grid-column: 1 / 7; font-size: 1.1rem; color:#fff;">ACTIVE: <span id="active-weapon">BEAM SWORD</span></div>
+            <div style="grid-column: 1 / 7; font-size: 1.4rem;">AMMO: <span id="ammo-count">N/A</span> / <span id="ammo-total">N/A</span></div>
+            <div id="radar" style="grid-column: 1 / 7; width: 130px; height: 130px; margin-bottom: 5px;">
                 <div id="radar-sweep"></div>
-                <div class="radar-dot enemy" style="top:30px; left:50px;"></div>
-                <div class="radar-dot ally" style="top:100px; left:110px;"></div>
+                <div class="radar-dot enemy" style="top:25px; left:40px;"></div>
+                <div class="radar-dot ally" style="top:80px; left:90px;"></div>
             </div>
-            <div class="data-stream" id="system-log">
-                <span>> SYSTEM: COMM OK.</span>
-                <span>> SIGNAL: STRONG.</span>
-                <span>> CHANNELS: 16 ACTIVE.</span>
-                <span>> SCANNING...</span>
-            </div>
+            <div class="key-btn" data-key="7">7</div><div class="key-btn" data-key="8">8</div><div class="key-btn" data-key="9">9</div><div class="key-btn" data-key="0">0</div><div class="key-btn" data-key="-">-</div><div class="key-btn" data-key="=">=</div>
+            <div class="key-btn" data-key="y">Y</div><div class="key-btn" data-key="u">U</div><div class="key-btn" data-key="i">I</div><div class="key-btn" data-key="o">O</div><div class="key-btn" data-key="p">P</div><div class="key-btn" data-key="[">[</div>
+            <div class="key-btn" data-key="h">H</div><div class="key-btn" data-key="j">J</div><div class="key-btn" data-key="k">K</div><div class="key-btn" data-key="l">L</div><div class="key-btn" data-key=";">;</div><div class="key-btn" data-key="'">'</div>
+            <div class="key-btn" data-key="n">N</div><div class="key-btn" data-key="m">M</div><div class="key-btn" data-key=",">,</div><div class="key-btn" data-key=".">.</div><div class="key-btn" data-key="/">/</div><div class="key-btn" data-key="\"></div>
+            <div class="key-btn" data-key="Backspace" style="grid-column: 1 / 3;">Back</div><div class="key-btn" data-key="Enter" style="grid-column: 3 / 7;">Enter</div>
+            <div class="key-btn" data-key=" " style="grid-column: 1 / 5;">Space (R)</div>
         </div>
 
         <div id="console-panel">
@@ -306,14 +347,14 @@
                 <div class="gauge-bar"><div id="satellite-gauge" class="gauge-fill" style="width:0%;"></div><span class="gauge-text"><span id="satellite-value">0</span>%</span></div>
             </div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                <button class="cockpit-btn active" onclick="switchMode('cruise', this)">CRUISE MODE</button>
-                <button class="cockpit-btn warning" onclick="switchMode('combat', this)">COMBAT MODE</button>
-                <button class="cockpit-btn danger" onclick="switchMode('satellite', this)">SATELLITE CANNON</button>
+                <button class="cockpit-btn active" id="btn-cruise" onclick="switchMode('cruise')">CRUISE MODE</button>
+                <button class="cockpit-btn warning" id="btn-combat" onclick="switchMode('combat')">COMBAT MODE</button>
+                <button class="cockpit-btn danger" id="btn-satellite" onclick="switchMode('satellite')">SATELLITE CANNON</button>
             </div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                <button class="cockpit-btn" onclick="selectWeapon('s-buster', this)">S-BUSTER RIFLE</button>
-                <button class="cockpit-btn active" onclick="selectWeapon('b-sword', this)">BEAM SWORD</button>
-                <button class="cockpit-btn" onclick="openMenu('menu', this)">SYSTEM MENU</button>
+                <button class="cockpit-btn" id="btn-s-buster" onclick="selectWeapon('s-buster')">S-BUSTER RIFLE</button>
+                <button class="cockpit-btn active" id="btn-b-sword" onclick="selectWeapon('b-sword')">BEAM SWORD</button>
+                <button class="cockpit-btn" onclick="openMenu('menu')">SYSTEM MENU</button>
             </div>
         </div>
         
@@ -331,12 +372,40 @@
         let yCoord = 901.4;
         let zCoord = -12.8;
 
+        // キーボード連動機能
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            // 画面上の対応するボタン要素を見つけて、アクティブにする
+            const keyBtn = document.querySelector(`.key-btn[data-key="${key}"]`);
+            if (keyBtn) {
+                keyBtn.classList.add('active');
+            }
+
+            // 特定のキーを既存の機能（モードチェンジ、武装選択）に紐付ける
+            // 例：左の特定のキーでモードチェンジ、右の特定のキーで武装選択
+            if (key === 'f') switchMode('combat'); // F -> COMBAT MODE
+            if (key === 'j') switchMode('satellite'); // J -> SATELLITE CANNON
+            if (key === 'd') switchMode('cruise'); // D -> CRUISE MODE
+            if (key === 'q') selectWeapon('s-buster'); // Q -> S-BUSTER RIFLE
+            if (key === 'y') selectWeapon('b-sword'); // Y -> BEAM SWORD
+        });
+
+        document.addEventListener('keyup', (event) => {
+            const key = event.key;
+            const keyBtn = document.querySelector(`.key-btn[data-key="${key}"]`);
+            if (keyBtn) {
+                keyBtn.classList.remove('active');
+            }
+        });
+
         // モードチェンジ機能
-        function switchMode(mode, btnElement) {
+        function switchMode(mode) {
             // モードボタンのアクティブ状態リセット
-            const modeButtons = document.querySelectorAll('.cockpit-btn[onclick^="switchMode"]');
+            const modeButtons = document.querySelectorAll('.cockpit-btn[id^="btn-"]');
             modeButtons.forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
+            // 対応するボタンを見つけてアクティブにする
+            const activeModeBtn = document.getElementById(`btn-${mode}`);
+            if (activeModeBtn) activeModeBtn.classList.add('active');
 
             const video = document.getElementById('main-video');
             const subImg = document.getElementById('sub-img-left');
@@ -392,11 +461,13 @@
         }
 
         // 武装選択機能
-        function selectWeapon(weapon, btnElement) {
+        function selectWeapon(weapon) {
             // 武装ボタンのアクティブ状態リセット
-            const weaponButtons = document.querySelectorAll('.cockpit-btn[onclick^="selectWeapon"]');
+            const weaponButtons = document.querySelectorAll('.cockpit-btn[id^="btn-"]');
             weaponButtons.forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
+            // 対応するボタンを見つけてアクティブにする
+            const activeWeaponBtn = document.getElementById(`btn-${weapon}`);
+            if (activeWeaponBtn) activeWeaponBtn.classList.add('active');
 
             activeWeapon = weapon;
             const activeWeaponDisplay = document.getElementById('active-weapon');
@@ -415,9 +486,8 @@
         }
 
         // メニュー展開機能 (ダミー)
-        function openMenu(menu, btnElement) {
-            btnElement.classList.toggle('active');
-            alert("SYSTEM MENU: Function is currently disabled. Access G-CON maintenance protocol.");
+        function openMenu(menu) {
+            alert("SYSTEM MENU: Function is currently disabled. Access Maintenance Protocol.");
         }
 
         // エネルギーゲージ更新機能 (サテライト)
