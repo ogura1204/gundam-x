@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MS COCKPIT UI - G-CON BOOT SEQUENCE</title>
+    <title>MS COCKPIT UI - MAC EXCLUSIVE SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,213 +15,188 @@
             --ui-orange: #ffaa00;
             --ui-orange-glow: rgba(255, 170, 0, 0.8);
             --bg-dark: #030508;
-            --panel-bg: rgba(5, 10, 15, 0.7); /* 背景が透けるように少し透明度を下げる */
+            --panel-bg: rgba(5, 10, 15, 0.75);
             --panel-border: rgba(0, 243, 255, 0.4);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; }
         
         body {
-            width: 100vw; height: 100vh;
-            background-color: #000;
-            overflow: hidden;
-            font-family: 'Share Tech Mono', monospace;
-            color: var(--ui-cyan);
-            user-select: none;
+            width: 100vw; height: 100vh; background-color: #000; overflow: hidden;
+            font-family: 'Share Tech Mono', monospace; color: var(--ui-cyan);
+            user-select: none; z-index: 10;
             background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px);
-            z-index: 10;
         }
 
         /* 縦画面警告 */
         #portrait-warning {
-            display: none;
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; z-index: 9999;
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
         @media screen and (orientation: portrait) {
-            #portrait-warning { display: flex; }
-            #main-container { display: none !important; }
+            #portrait-warning { display: flex; } #main-container { display: none !important; }
         }
 
         /* コンテナ全体 */
-        #main-container {
-            width: 100vw; height: 100vh;
-            position: relative;
-            perspective: 2000px;
-        }
+        #main-container { width: 100vw; height: 100vh; position: relative; perspective: 2000px; }
 
-        /* 外部モニター（背景フルスクリーン動画） */
+        /* 外部モニター（最高画質背景動画） */
         #external-view {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: 1;
-            opacity: 0; /* 初期状態は非表示 */
-            filter: brightness(0);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+            z-index: 1; opacity: 0; filter: brightness(0);
             transition: opacity 1.5s ease-in, filter 2s ease-out;
         }
 
-        /* 起動シーケンスオーバーレイ（全画面） */
+        /* 起動シーケンスオーバーレイ */
         #boot-screen {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #020508; z-index: 1000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #020508; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 1s ease;
         }
 
         .boot-console {
-            width: 60%; height: 60%;
-            border: 1px solid var(--ui-cyan-dim);
-            padding: 30px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative;
+            width: 60%; height: 60%; border: 1px solid var(--ui-cyan-dim); padding: 30px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
         }
+        .boot-text { font-size: 1.5rem; letter-spacing: 2px; text-align: center; margin-bottom: 20px; line-height: 1.5; }
 
-        .boot-text {
-            font-size: 1.5rem; letter-spacing: 2px; text-align: center;
-            margin-bottom: 20px; line-height: 1.5;
-        }
-
-        /* 生体認証アニメーション用 */
+        /* 指紋認証アイコン */
         #biometric-scan {
-            width: 150px; height: 150px; border: 2px solid var(--ui-cyan); border-radius: 50%;
-            position: relative; overflow: hidden; display: none; margin-bottom: 30px;
+            width: 120px; height: 120px; border: 2px dashed var(--ui-cyan); border-radius: 20px;
+            position: relative; display: none; margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg fill="%2300f3ff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>') center/50% no-repeat;
+            box-shadow: inset 0 0 20px rgba(0,243,255,0.2);
+            animation: pulseAuth 2s infinite;
         }
-        #biometric-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            background: var(--ui-cyan); box-shadow: 0 0 15px var(--ui-cyan);
-            animation: scanLine 1.5s linear infinite;
-        }
-        @keyframes scanLine { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        @keyframes pulseAuth { 0% { box-shadow: inset 0 0 10px rgba(0,243,255,0.1); } 50% { box-shadow: inset 0 0 40px rgba(0,243,255,0.8); } 100% { box-shadow: inset 0 0 10px rgba(0,243,255,0.1); } }
 
-        /* スタートボタン */
         #btn-start {
-            background: rgba(0, 243, 255, 0.1); border: 2px solid var(--ui-cyan);
-            color: var(--ui-cyan); font-family: 'Orbitron', sans-serif; font-size: 2rem;
-            padding: 20px 50px; cursor: pointer; text-transform: uppercase;
+            background: rgba(0, 243, 255, 0.1); border: 2px solid var(--ui-cyan); color: var(--ui-cyan);
+            font-family: 'Orbitron', sans-serif; font-size: 2rem; padding: 20px 50px; cursor: pointer; text-transform: uppercase;
             box-shadow: 0 0 20px rgba(0,243,255,0.2); transition: 0.3s;
         }
         #btn-start:hover { background: var(--ui-cyan); color: #000; box-shadow: 0 0 40px var(--ui-cyan); }
 
         /* コックピットUIグリッド */
         #cockpit-ui {
-            display: grid;
-            grid-template-rows: 10vh 65vh 25vh;
-            grid-template-columns: 25vw 50vw 25vw;
-            width: 100vw; height: 100vh;
-            position: absolute; top: 0; left: 0;
-            z-index: 10;
-            pointer-events: none; /* 初期状態ではクリック不可 */
+            display: grid; grid-template-rows: 10vh 65vh 25vh; grid-template-columns: 25vw 50vw 25vw;
+            width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 10; pointer-events: none;
         }
         #cockpit-ui.active { pointer-events: auto; }
 
-        /* パネル共通（スライドインアニメーション用設定） */
+        /* パネル共通設定 */
         .panel {
-            background: var(--panel-bg);
-            border: 2px solid var(--panel-border);
+            background: var(--panel-bg); border: 2px solid var(--panel-border);
             box-shadow: inset 0 0 40px rgba(0, 243, 255, 0.1), 0 0 30px rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            position: relative; overflow: hidden;
-            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s;
-            opacity: 0;
+            backdrop-filter: blur(10px); position: relative; overflow: hidden;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s; opacity: 0;
         }
 
-        /* 各パネルの初期配置（画面外）と最終配置（Active） */
-        
-        /* 上部HUD：上から降りてくる */
+        /* 上部HUD */
         #hud-top {
-            grid-column: 1 / 4; grid-row: 1 / 2;
-            display: flex; justify-content: space-between; align-items: flex-start;
-            padding: 5px 40px; border-bottom: none;
-            clip-path: polygon(0 0, 100% 0, 100% 80%, 88% 100%, 12% 100%, 0 80%);
+            grid-column: 1 / 4; grid-row: 1 / 2; display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 5px 40px; border-bottom: none; clip-path: polygon(0 0, 100% 0, 100% 80%, 88% 100%, 12% 100%, 0 80%);
             background: linear-gradient(180deg, rgba(0,243,255,0.2) 0%, transparent 100%);
             transform: translateY(-150%);
         }
         #cockpit-ui.active #hud-top { transform: translateY(0); opacity: 1; }
 
-        /* 左コンソール：左からスライド＆傾き */
+        /* 左コンソール（カメラ＋左キーボード） */
         #left-console {
             grid-column: 1 / 2; grid-row: 2 / 3; margin-left: 20px;
             clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 85%);
             transform: translateX(-150%) rotateY(15deg) translateZ(50px);
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; padding: 20px;
+            padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
         }
         #cockpit-ui.active #left-console { transform: translateX(0) rotateY(15deg) translateZ(50px); opacity: 1; }
 
-        /* 右コンソール：右からスライド＆傾き */
+        /* 右コンソール（レーダー＋右キーボード） */
         #right-console {
             grid-column: 3 / 4; grid-row: 2 / 3; margin-right: 20px;
             clip-path: polygon(0 0, 100% 0, 100% 85%, 70% 100%, 0 100%);
             transform: translateX(150%) rotateY(-15deg) translateZ(50px);
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; padding: 20px;
+            padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
         }
         #cockpit-ui.active #right-console { transform: translateX(0) rotateY(-15deg) translateZ(50px); opacity: 1; }
 
-        /* 下部コンソール：下からせり上がる＆傾き */
+        /* 下部コンソール */
         #console-panel {
-            grid-column: 1 / 4; grid-row: 3 / 4;
-            display: grid; grid-template-columns: 25vw 50vw 25vw;
+            grid-column: 1 / 4; grid-row: 3 / 4; display: grid; grid-template-columns: 25vw 50vw 25vw;
             background: linear-gradient(0deg, rgba(0,243,255,0.1) 0%, transparent 100%);
             border-top: 3px solid var(--ui-cyan); padding: 10px 40px;
             transform: translateY(150%) rotateX(-10deg) translateZ(100px);
         }
         #cockpit-ui.active #console-panel { transform: translateY(0) rotateX(-10deg) translateZ(100px); opacity: 1; }
 
-        /* センターモニター（UIのみ、背景は透明にして外部映像を透過） */
+        /* センターモニター（YouTube表示エリア） */
         #center-hud {
-            grid-column: 2 / 3; grid-row: 2 / 3;
-            margin: 0 20px; border: 3px solid rgba(0, 243, 255, 0.1);
-            position: relative;
-            transform: translateZ(-100px) scale(0.8);
-            opacity: 0; transition: transform 1.5s ease-out, opacity 1s;
+            grid-column: 2 / 3; grid-row: 2 / 3; margin: 0 20px; border: 3px solid var(--ui-cyan);
+            position: relative; transform: translateZ(-100px) scale(0.8); opacity: 0;
+            background: #000; box-shadow: 0 0 50px rgba(0,243,255,0.2);
+            transition: transform 1.5s ease-out, opacity 1s;
+            display: flex; flex-direction: column;
         }
         #cockpit-ui.active #center-hud { transform: translateZ(-100px) scale(1); opacity: 1; }
 
-        /* ターゲットUIオーバーレイ */
-        .target-reticle {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60vh; height: 60vh; border: 4px dashed rgba(0, 243, 255, 0.3); border-radius: 50%;
-            animation: rotateTarget 15s linear infinite; pointer-events: none;
+        /* YouTube検索UI */
+        #yt-controls {
+            display: flex; padding: 10px; background: rgba(0, 243, 255, 0.1); border-bottom: 2px solid var(--ui-cyan);
         }
-        .target-reticle::before, .target-reticle::after {
-            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 6vh; height: 6vh; border: 4px solid rgba(0, 243, 255, 0.5); border-radius: 50%;
+        #yt-input {
+            flex: 1; background: rgba(0,0,0,0.8); border: 1px solid var(--ui-cyan); color: var(--ui-cyan);
+            font-family: 'Share Tech Mono', monospace; font-size: 1.2rem; padding: 5px 15px; outline: none;
         }
-        .target-reticle::after { width: 2vh; height: 2vh; background: rgba(0, 243, 255, 0.3); }
-        @keyframes rotateTarget { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        #yt-search-btn {
+            background: var(--ui-cyan); border: none; color: #000; font-family: 'Orbitron', sans-serif;
+            font-weight: bold; padding: 0 20px; cursor: pointer; margin-left: 10px; transition: 0.2s;
+        }
+        #yt-search-btn:hover { background: #fff; box-shadow: 0 0 15px var(--ui-cyan); }
 
-        /* 立体的なキーボードボタン */
+        #yt-player { width: 100%; flex: 1; border: none; }
+
+        /* 左モニター用 Webカメラ */
+        .camera-container {
+            width: 100%; height: 50%; border: 1px solid var(--ui-cyan-dim); position: relative; overflow: hidden;
+        }
+        #webcam-feed {
+            width: 100%; height: 100%; object-fit: cover;
+            /* タクティカルなシアン色フィルター */
+            filter: grayscale(100%) sepia(100%) hue-rotate(150deg) brightness(1.2) contrast(1.5);
+            transform: scaleX(-1); /* 鏡面反転 */
+        }
+        .cam-overlay {
+            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 5px; font-size: 0.8rem;
+        }
+
+        /* キーボード配置（一番下に固定） */
+        .keyboard-bottom {
+            display: grid; gap: 5px; margin-top: auto; /* flex-direction: columnのコンテナ内で一番下に押しやる */
+            padding-top: 10px; border-top: 1px solid var(--ui-cyan-dim);
+        }
+        #left-console .keyboard-bottom { grid-template-columns: repeat(6, 1fr); }
+        #right-console .keyboard-bottom { grid-template-columns: repeat(6, 1fr); }
+
+        /* キーボードボタン */
         .key-btn {
-            background: rgba(0,0,0,0.8); border: 2px solid var(--ui-cyan-dim); color: var(--ui-cyan);
-            font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: bold;
-            padding: 10px; text-align: center; cursor: pointer; text-transform: uppercase;
-            transition: all 0.1s ease-out; box-shadow: 0 4px rgba(0,243,255,0.2), 0 0 10px rgba(0,0,0,0.5);
-            transform: translateZ(10px);
+            background: rgba(0,0,0,0.8); border: 1px solid var(--ui-cyan-dim); color: var(--ui-cyan);
+            font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: bold;
+            padding: 8px 0; text-align: center; cursor: pointer; text-transform: uppercase;
+            transition: all 0.1s; box-shadow: 0 2px rgba(0,243,255,0.2);
         }
         .key-btn.active {
-            background: rgba(255, 0, 60, 0.3); border-color: var(--ui-red); color: var(--ui-red);
-            transform: translateZ(0px) translateY(4px); box-shadow: 0 0 20px var(--ui-red-glow);
+            background: rgba(255, 0, 60, 0.4); border-color: var(--ui-red); color: var(--ui-red);
+            transform: translateY(2px); box-shadow: 0 0 10px var(--ui-red-glow);
         }
 
-        /* アニメーションボタン */
+        /* 下部コンソールボタン類 */
         .cockpit-btn {
             background: rgba(0,0,0,0.7); border: 2px solid var(--ui-cyan); color: var(--ui-cyan);
-            font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: bold;
-            padding: 20px 40px; cursor: pointer; text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: bold; padding: 20px 40px; cursor: pointer;
             transition: all 0.2s; clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
-            box-shadow: 0 5px rgba(0,243,255,0.3);
         }
-        .cockpit-btn:hover, .cockpit-btn.active {
-            background: var(--ui-cyan); color: #000; box-shadow: 0 0 30px var(--ui-cyan-glow);
-            transform: scale(1.03) translateY(5px);
-        }
+        .cockpit-btn:hover, .cockpit-btn.active { background: var(--ui-cyan); color: #000; box-shadow: 0 0 30px var(--ui-cyan-glow); transform: scale(1.03); }
         .cockpit-btn.danger { border-color: var(--ui-red); color: var(--ui-red); }
         .cockpit-btn.danger:hover, .cockpit-btn.danger.active { background: var(--ui-red); color: #fff; box-shadow: 0 0 30px var(--ui-red-glow); }
-
-        /* データスクロール */
-        .data-stream { font-size: 0.9rem; line-height: 1.3; height: 120px; overflow: hidden; border: 1px solid var(--ui-cyan-dim); padding: 10px; }
-        .data-stream span { display: block; animation: scrollData 2.5s linear infinite; }
-        @keyframes scrollData { 0% { transform: translateY(0); } 100% { transform: translateY(-26px); } }
 
         /* ゲージ・レーダー類 */
         .gauge-container { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--ui-cyan-dim); }
@@ -229,18 +204,19 @@
         .gauge-fill { height: 100%; background: var(--ui-cyan); transition: width 0.3s; }
         .gauge-text { position: absolute; top: 0; left: 10px; font-size: 1rem; color: #fff; text-shadow: 1px 1px #000;}
         
-        #radar { width: 130px; height: 130px; border: 2px solid var(--ui-cyan); border-radius: 50%; position: relative; margin: 0 auto; overflow: hidden; }
+        #radar { width: 100%; height: 150px; border: 2px solid var(--ui-cyan); border-radius: 10px; position: relative; overflow: hidden; }
         #radar-sweep { position: absolute; top:50%; left:50%; width:100%; height:2px; background:var(--ui-cyan); transform-origin: left; animation: rotateTarget 3s linear infinite; }
         .radar-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; animation: fadeInOut 2s infinite; }
         .radar-dot.enemy { background: var(--ui-red); } .radar-dot.ally { background: var(--ui-cyan); }
         @keyframes fadeInOut { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+        @keyframes rotateTarget { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div id="portrait-warning">
         <h2 style="font-family: 'Orbitron'; color: var(--ui-red); font-size: 2.5rem; margin-bottom: 25px;">SYSTEM ALERT</h2>
-        <p>PLEASE ROTATE YOUR DEVICE TO LANDSCAPE MODE.<br>コックピットモニターは横画面専用です。</p>
+        <p>PLEASE ROTATE YOUR DEVICE TO LANDSCAPE MODE.</p>
     </div>
 
     <div id="main-container">
@@ -251,84 +227,82 @@
 
         <div id="boot-screen">
             <div class="boot-console">
-                <h1 style="font-family: 'Orbitron'; font-size: 3rem; margin-bottom: 40px; color: var(--ui-cyan); text-shadow: 0 0 20px var(--ui-cyan);">SYS_G-CON</h1>
-                
-                <div id="biometric-scan">
-                    <div id="biometric-line"></div>
-                </div>
-
+                <h1 style="font-family: 'Orbitron'; font-size: 3rem; margin-bottom: 40px; color: var(--ui-cyan); text-shadow: 0 0 20px var(--ui-cyan);">OS_MAC_G-CON</h1>
+                <div id="biometric-scan"></div>
                 <div id="boot-status" class="boot-text">AWAITING SYSTEM INITIATION...</div>
-                
                 <button id="btn-start" onclick="initiateBootSequence()">SYSTEM START</button>
             </div>
         </div>
 
         <div id="cockpit-ui">
-            
             <div id="hud-top" class="panel">
-                <div style="font-size: 1.8rem; font-family: 'Orbitron'; font-weight: 900; color: var(--ui-cyan);">SYS_G-CON <span style="font-size: 1rem; color:#fff;">v4.0.0 3D</span></div>
+                <div style="font-size: 1.8rem; font-family: 'Orbitron'; font-weight: 900;">SYS_MAC <span style="font-size: 1rem; color:#fff;">v5.0.0</span></div>
                 <div style="font-size: 2.5rem; font-family: 'Orbitron'; font-weight: 900; color: #fff; letter-spacing: 5px;">GX-9900</div>
                 <div style="text-align: right; color: var(--ui-orange);">
-                    ALERT STATUS: <span id="alert-status">NORMAL</span><br>
-                    <span style="font-size: 0.9rem;">COORDINATES: X: <span id="coord-x">482.1</span> Y: <span id="coord-y">901.4</span> Z: <span id="coord-z">-12.8</span></span>
+                    ALERT STATUS: NORMAL<br>
+                    <span style="font-size: 0.9rem;">COORDINATES: X:482.1 Y:901.4 Z:-12.8</span>
                 </div>
             </div>
 
             <div id="left-console" class="panel">
-                <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100" alt="Tactical map" style="grid-column: 1 / 7; width: 100%; height: auto; object-fit: contain; filter: hue-rotate(180deg) brightness(1.3) contrast(1.6);">
-                <div class="data-stream" style="grid-column: 1 / 7;">
-                    <span>> SPEED: <span id="speed">12500</span> km/h</span>
-                    <span>> ALTITUDE: <span id="altitude">3500</span> m</span>
-                    <span>> REACT TEMP: <span id="react-temp">450</span>°C</span>
+                <div class="camera-container">
+                    <video id="webcam-feed" autoplay playsinline></video>
+                    <div class="cam-overlay" id="cam-status">PILOT CAM: CONNECTING...</div>
+                    <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.2; pointer-events:none; filter: hue-rotate(180deg);">
                 </div>
-                <div class="key-btn" data-key="1">1</div><div class="key-btn" data-key="2">2</div><div class="key-btn" data-key="3">3</div><div class="key-btn" data-key="4">4</div><div class="key-btn" data-key="5">5</div><div class="key-btn" data-key="6">6</div>
-                <div class="key-btn" data-key="q">Q</div><div class="key-btn" data-key="w">W</div><div class="key-btn" data-key="e">E</div><div class="key-btn" data-key="r">R</div><div class="key-btn" data-key="t">T</div><div class="key-btn" data-key="Tab">Tab</div>
-                <div class="key-btn" data-key="a">A</div><div class="key-btn" data-key="s">S</div><div class="key-btn" data-key="d">D</div><div class="key-btn" data-key="f">F</div><div class="key-btn" data-key="g">G</div><div class="key-btn" data-key="CapsLock">Caps</div>
-                <div class="key-btn" data-key="z">Z</div><div class="key-btn" data-key="x">X</div><div class="key-btn" data-key="c">C</div><div class="key-btn" data-key="v">V</div><div class="key-btn" data-key="b">B</div><div class="key-btn" data-key="Shift">Shift</div>
-                <div class="key-btn" data-key="Control">Ctrl</div><div class="key-btn" data-key="Alt">Alt</div><div class="key-btn" data-key=" " style="grid-column: 3 / 7;">Space (L)</div>
+
+                <div class="keyboard-bottom">
+                    <div class="key-btn" data-key="1">1</div><div class="key-btn" data-key="2">2</div><div class="key-btn" data-key="3">3</div><div class="key-btn" data-key="4">4</div><div class="key-btn" data-key="5">5</div><div class="key-btn" data-key="6">6</div>
+                    <div class="key-btn" data-key="q">Q</div><div class="key-btn" data-key="w">W</div><div class="key-btn" data-key="e">E</div><div class="key-btn" data-key="r">R</div><div class="key-btn" data-key="t">T</div><div class="key-btn" data-key="Tab">Tab</div>
+                    <div class="key-btn" data-key="a">A</div><div class="key-btn" data-key="s">S</div><div class="key-btn" data-key="d">D</div><div class="key-btn" data-key="f">F</div><div class="key-btn" data-key="g">G</div><div class="key-btn" data-key="CapsLock">Caps</div>
+                    <div class="key-btn" data-key="z">Z</div><div class="key-btn" data-key="x">X</div><div class="key-btn" data-key="c">C</div><div class="key-btn" data-key="v">V</div><div class="key-btn" data-key="b">B</div><div class="key-btn" data-key="Shift">Shift</div>
+                    <div class="key-btn" data-key="Control">Ctrl</div><div class="key-btn" data-key="Alt">Alt</div><div class="key-btn" data-key=" " style="grid-column: 3 / 7;">Space (L)</div>
+                </div>
             </div>
 
             <div id="center-hud">
-                <div class="target-reticle" id="reticle"></div>
-                <div style="position: absolute; top: 20px; left: 20px; font-size: 2.2rem; font-family: 'Orbitron'; text-shadow: 4px 4px #000;">
-                    MODE: <span id="mode-display" style="color:#fff;">CRUISE</span>
+                <div id="yt-controls">
+                    <input type="text" id="yt-input" placeholder="Enter YouTube URL, Video ID, or keyword...">
+                    <button id="yt-search-btn" onclick="executeYouTubeSearch()">SEARCH</button>
                 </div>
-                <div style="position: absolute; top: 20px; right: 20px; padding: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--ui-cyan-dim);">TARGET DIST: <span id="target-dist">12000</span>m</div>
+                <iframe id="yt-player" src="https://www.youtube.com/embed/DB2gMQ5ee2Y?autoplay=0&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
 
             <div id="right-console" class="panel">
-                <h3 style="grid-column: 1 / 7; border-bottom: 1px solid var(--ui-cyan); margin-bottom: 5px; font-size: 1.2rem;">WEAPON & RADAR</h3>
-                <div style="grid-column: 1 / 7; font-size: 1.1rem; color:#fff;">ACTIVE: <span id="active-weapon">BEAM SWORD</span></div>
-                <div style="grid-column: 1 / 7; font-size: 1.4rem;">AMMO: <span id="ammo-count">N/A</span> / <span id="ammo-total">N/A</span></div>
-                <div id="radar" style="grid-column: 1 / 7; margin-bottom: 5px;">
-                    <div id="radar-sweep"></div>
-                    <div class="radar-dot enemy" style="top:25px; left:40px;"></div>
-                    <div class="radar-dot ally" style="top:80px; left:90px;"></div>
+                <div style="flex:1;">
+                    <h3 style="border-bottom: 1px solid var(--ui-cyan); margin-bottom: 5px; font-size: 1.2rem;">TACTICAL RADAR</h3>
+                    <div id="radar">
+                        <div id="radar-sweep"></div>
+                        <div class="radar-dot enemy" style="top:25px; left:40px;"></div>
+                        <div class="radar-dot ally" style="top:80px; left:90px;"></div>
+                    </div>
+                    <div style="font-size: 1.2rem; margin-top: 10px;">ACTIVE: <span id="active-weapon" style="color:#fff;">BEAM SWORD</span></div>
                 </div>
-                <div class="key-btn" data-key="7">7</div><div class="key-btn" data-key="8">8</div><div class="key-btn" data-key="9">9</div><div class="key-btn" data-key="0">0</div><div class="key-btn" data-key="-">-</div><div class="key-btn" data-key="=">=</div>
-                <div class="key-btn" data-key="y">Y</div><div class="key-btn" data-key="u">U</div><div class="key-btn" data-key="i">I</div><div class="key-btn" data-key="o">O</div><div class="key-btn" data-key="p">P</div><div class="key-btn" data-key="[">[</div>
-                <div class="key-btn" data-key="h">H</div><div class="key-btn" data-key="j">J</div><div class="key-btn" data-key="k">K</div><div class="key-btn" data-key="l">L</div><div class="key-btn" data-key=";">;</div><div class="key-btn" data-key="'">'</div>
-                <div class="key-btn" data-key="n">N</div><div class="key-btn" data-key="m">M</div><div class="key-btn" data-key=",">,</div><div class="key-btn" data-key=".">.</div><div class="key-btn" data-key="/">/</div><div class="key-btn" data-key="\"></div>
-                <div class="key-btn" data-key="Backspace" style="grid-column: 1 / 3;">Back</div><div class="key-btn" data-key="Enter" style="grid-column: 3 / 7;">Enter</div>
-                <div class="key-btn" data-key=" " style="grid-column: 1 / 5;">Space (R)</div>
+
+                <div class="keyboard-bottom">
+                    <div class="key-btn" data-key="7">7</div><div class="key-btn" data-key="8">8</div><div class="key-btn" data-key="9">9</div><div class="key-btn" data-key="0">0</div><div class="key-btn" data-key="-">-</div><div class="key-btn" data-key="=">=</div>
+                    <div class="key-btn" data-key="y">Y</div><div class="key-btn" data-key="u">U</div><div class="key-btn" data-key="i">I</div><div class="key-btn" data-key="o">O</div><div class="key-btn" data-key="p">P</div><div class="key-btn" data-key="[">[</div>
+                    <div class="key-btn" data-key="h">H</div><div class="key-btn" data-key="j">J</div><div class="key-btn" data-key="k">K</div><div class="key-btn" data-key="l">L</div><div class="key-btn" data-key=";">;</div><div class="key-btn" data-key="'">'</div>
+                    <div class="key-btn" data-key="n">N</div><div class="key-btn" data-key="m">M</div><div class="key-btn" data-key=",">,</div><div class="key-btn" data-key=".">.</div><div class="key-btn" data-key="/">/</div><div class="key-btn" data-key="\"></div>
+                    <div class="key-btn" data-key="Backspace" style="grid-column: 1 / 3;">Back</div><div class="key-btn" data-key="Enter" style="grid-column: 3 / 7;">Enter</div>
+                    <div class="key-btn" data-key=" " style="grid-column: 1 / 5;">Space (R)</div>
+                </div>
             </div>
 
             <div id="console-panel" class="panel">
                 <div class="gauge-container">
                     <div>MAIN REACTOR</div>
-                    <div class="gauge-bar"><div id="reactor-gauge" class="gauge-fill" style="width:95%;"></div><span class="gauge-text"><span id="reactor-value">95</span>%</span></div>
-                    <div>SATELLITE CHARGER</div>
-                    <div class="gauge-bar"><div id="satellite-gauge" class="gauge-fill" style="width:0%;"></div><span class="gauge-text"><span id="satellite-value">0</span>%</span></div>
+                    <div class="gauge-bar"><div id="reactor-gauge" class="gauge-fill" style="width:95%;"></div></div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                    <button class="cockpit-btn active" id="btn-cruise" onclick="switchMode('cruise')">CRUISE</button>
-                    <button class="cockpit-btn warning" id="btn-combat" onclick="switchMode('combat')">COMBAT</button>
-                    <button class="cockpit-btn danger" id="btn-satellite" onclick="switchMode('satellite')">SATELLITE</button>
+                    <button class="cockpit-btn active">CRUISE</button>
+                    <button class="cockpit-btn warning">COMBAT</button>
+                    <button class="cockpit-btn danger">SATELLITE</button>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                    <button class="cockpit-btn" id="btn-s-buster" onclick="selectWeapon('s-buster')">S-BUSTER</button>
-                    <button class="cockpit-btn active" id="btn-b-sword" onclick="selectWeapon('b-sword')">B-SWORD</button>
-                    <button class="cockpit-btn" onclick="alert('MAINTENANCE PROTOCOL ONLY')">MENU</button>
+                    <button class="cockpit-btn">S-BUSTER</button>
+                    <button class="cockpit-btn active">B-SWORD</button>
+                    <button class="cockpit-btn">MENU</button>
                 </div>
             </div>
             
@@ -336,7 +310,7 @@
     </div>
 
     <script>
-        // --- 起動シーケンス処理 ---
+        // --- MAC生体認証＆起動シーケンス ---
         async function initiateBootSequence() {
             const btn = document.getElementById('btn-start');
             const status = document.getElementById('boot-status');
@@ -344,171 +318,121 @@
             const extView = document.getElementById('external-view');
             
             btn.style.display = 'none';
-            status.innerHTML = "POWERING ON...<br>INITIALIZING MAINFRAME";
+            extView.play(); // 背景動画再生開始
             
-            // 外部映像の再生開始（ブラウザのautoplay制限対策）
-            extView.play();
-
-            await sleep(1500);
-            
-            // 生体認証フェーズ
-            status.innerHTML = "REQUESTING BIOMETRIC AUTHENTICATION...";
+            status.innerHTML = "REQUESTING MAC TOUCH ID / BIOMETRIC AUTH...";
             scan.style.display = 'block';
+
+            // WebAuthnによるネイティブ指紋認証呼び出し
+            let authSuccess = false;
+            if (window.PublicKeyCredential && window.location.protocol !== 'file:') {
+                try {
+                    const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
+                    const userID = new Uint8Array(16); window.crypto.getRandomValues(userID);
+                    
+                    // これによりMacのTouch IDポップアップが起動します
+                    await navigator.credentials.create({
+                        publicKey: {
+                            challenge: challenge, rp: { name: "G-CON System" },
+                            user: { id: userID, name: "Pilot", displayName: "Garrod Ran" },
+                            pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+                            authenticatorSelection: { authenticatorAttachment: "platform" },
+                            timeout: 60000
+                        }
+                    });
+                    authSuccess = true;
+                } catch (e) {
+                    console.warn("Touch ID cancelled or hardware not found. Bypassing...");
+                }
+            }
             
-            await sleep(2000);
-            
-            scan.style.borderColor = "var(--ui-orange)";
-            document.getElementById('biometric-line').style.background = "var(--ui-orange)";
-            status.style.color = "var(--ui-orange)";
-            status.innerHTML = "SCANNING IRIS & NEURAL PATTERNS...";
-            
-            await sleep(2000);
+            // Touch IDがキャンセルされた、またはローカル(file://)で動かしている場合は演出でカバー
+            if (!authSuccess) {
+                status.innerHTML = "SECURE ENCLAVE NOT FOUND.<br>INITIATING MANUAL OVERRIDE SCAN...";
+                await new Promise(r => setTimeout(r, 2000));
+            }
             
             scan.style.borderColor = "var(--ui-cyan)";
-            document.getElementById('biometric-line').style.background = "var(--ui-cyan)";
             status.style.color = "var(--ui-cyan)";
-            status.innerHTML = "ACCESS GRANTED.<br>PILOT: GARROD RAN RECOGNIZED.";
+            status.innerHTML = "ACCESS GRANTED.<br>PILOT RECOGNIZED. CONNECTING CAMS...";
             
-            await sleep(1500);
+            // Webカメラ接続
+            connectWebCam();
 
-            // 外部モニター接続・パネル展開フェーズ
+            await new Promise(r => setTimeout(r, 1500));
+
+            // モニター展開
             scan.style.display = 'none';
             status.style.fontSize = "2rem";
-            status.innerHTML = "CONNECTING EXTERNAL MONITORS...<br>DEPLOYING UI PANELS";
+            status.innerHTML = "DEPLOYING UI PANELS";
             
-            await sleep(1000);
-
-            // ブート画面フェードアウト、UIアクティブ化
             document.getElementById('boot-screen').style.opacity = '0';
-            extView.style.opacity = '1';
-            extView.style.filter = 'brightness(1)';
+            extView.style.opacity = '1'; extView.style.filter = 'brightness(1)';
             document.getElementById('cockpit-ui').classList.add('active');
 
-            setTimeout(() => {
-                document.getElementById('boot-screen').style.display = 'none';
-                updateData(); // データ変動シミュレーション開始
-                setInterval(updateSatelliteGauge, 200);
-            }, 1000);
+            setTimeout(() => { document.getElementById('boot-screen').style.display = 'none'; }, 1000);
         }
 
-        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-
-        // --- キーボード連動機能 ---
-        document.addEventListener('keydown', (event) => {
-            const key = event.key;
-            const keyBtn = document.querySelector(`.key-btn[data-key="${key.toLowerCase()}"]`) || document.querySelector(`.key-btn[data-key="${key}"]`);
-            if (keyBtn) keyBtn.classList.add('active');
-
-            if (key.toLowerCase() === 'f') switchMode('combat');
-            if (key.toLowerCase() === 'j') switchMode('satellite');
-            if (key.toLowerCase() === 'd') switchMode('cruise');
-            if (key.toLowerCase() === 'q') selectWeapon('s-buster');
-            if (key.toLowerCase() === 'y') selectWeapon('b-sword');
-        });
-
-        document.addEventListener('keyup', (event) => {
-            const key = event.key;
-            const keyBtn = document.querySelector(`.key-btn[data-key="${key.toLowerCase()}"]`) || document.querySelector(`.key-btn[data-key="${key}"]`);
-            if (keyBtn) keyBtn.classList.remove('active');
-        });
-
-        // --- モードチェンジ機能 ---
-        let satelliteCharging = false;
-        let satelliteValue = 0;
-
-        function switchMode(mode) {
-            document.querySelectorAll('.cockpit-btn[id^="btn-"]').forEach(btn => btn.classList.remove('active'));
-            const activeModeBtn = document.getElementById(`btn-${mode}`);
-            if (activeModeBtn) activeModeBtn.classList.add('active');
-
-            const extView = document.getElementById('external-view');
-            const modeDisplay = document.getElementById('mode-display');
-            const alertStatus = document.getElementById('alert-status');
-            const reticle = document.getElementById('reticle');
-
-            // シームレスな映像切り替えのため一度暗くする
-            extView.style.filter = "brightness(0.3)";
-            
-            setTimeout(() => {
-                if (mode === 'cruise') {
-                    extView.src = "https://assets.mixkit.co/videos/preview/mixkit-galaxy-with-stars-in-the-universe-3171-large.mp4";
-                    modeDisplay.innerText = "CRUISE"; modeDisplay.style.color = "#fff";
-                    alertStatus.innerText = "NORMAL"; alertStatus.style.color = "var(--ui-orange)";
-                    reticle.style.borderColor = "rgba(0, 243, 255, 0.4)";
-                    satelliteCharging = false;
-                } else if (mode === 'combat') {
-                    extView.src = "https://assets.mixkit.co/videos/preview/mixkit-entering-a-hyperspace-jump-in-outer-space-3162-large.mp4";
-                    modeDisplay.innerText = "COMBAT"; modeDisplay.style.color = "var(--ui-orange)";
-                    alertStatus.innerText = "ENGAGED"; alertStatus.style.color = "var(--ui-orange)";
-                    reticle.style.borderColor = "var(--ui-orange-glow)";
-                    satelliteCharging = false;
-                } else if (mode === 'satellite') {
-                    extView.src = "https://assets.mixkit.co/videos/preview/mixkit-fire-flames-burning-in-slow-motion-4034-large.mp4";
-                    modeDisplay.innerText = "SATELLITE SYSTEM"; modeDisplay.style.color = "var(--ui-red)";
-                    alertStatus.innerText = "DANGER / CHARGING"; alertStatus.style.color = "var(--ui-red)";
-                    reticle.style.borderColor = "var(--ui-red-glow)";
-                    satelliteCharging = true; satelliteValue = 0;
-                }
-                extView.play();
-                extView.style.filter = "brightness(1)";
-            }, 500);
-        }
-
-        // --- 武装・データシミュレーション処理 ---
-        let reactorValue = 95;
-        let targetDistValue = 12000;
-        let ammoCounts = { 's-buster': { count: 35, total: 35 }, 'b-sword': { count: 'N/A', total: 'N/A' }, 'satellite': { count: 'CHARGING', total: '100%' }};
-        let activeWeapon = 'b-sword';
-        let xCoord = 482.1, yCoord = 901.4, zCoord = -12.8;
-
-        function selectWeapon(weapon) {
-            document.querySelectorAll('.cockpit-btn[id^="btn-"]').forEach(btn => btn.classList.remove('active'));
-            const activeWeaponBtn = document.getElementById(`btn-${weapon}`);
-            if (activeWeaponBtn) activeWeaponBtn.classList.add('active');
-
-            activeWeapon = weapon;
-            document.getElementById('active-weapon').innerText = weapon === 's-buster' ? "S-BUSTER RIFLE" : "BEAM SWORD";
-            document.getElementById('ammo-count').innerText = ammoCounts[weapon].count;
-            document.getElementById('ammo-total').innerText = ammoCounts[weapon].total;
-        }
-
-        function updateSatelliteGauge() {
-            if (satelliteCharging) {
-                if (satelliteValue < 100) { satelliteValue += 2; } 
-                else {
-                    satelliteValue = 100;
-                    document.getElementById('alert-status').innerText = "READY TO FIRE";
-                    document.getElementById('alert-status').style.color = "var(--ui-cyan)";
-                }
-                document.getElementById('satellite-gauge').style.width = satelliteValue + '%';
-                document.getElementById('satellite-value').innerText = satelliteValue;
-                if(satelliteValue === 100) document.getElementById('satellite-gauge').style.backgroundColor = 'var(--ui-cyan)';
-            } else {
-                satelliteValue = 0;
-                document.getElementById('satellite-gauge').style.width = '0%';
-                document.getElementById('satellite-value').innerText = '0';
+        // --- 左モニター Webカメラ接続処理 ---
+        async function connectWebCam() {
+            try {
+                // 最高画質(1080p)でのカメラ取得を要求
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 } } });
+                const videoEl = document.getElementById('webcam-feed');
+                videoEl.srcObject = stream;
+                document.getElementById('cam-status').innerText = "PILOT CAM: ONLINE";
+                document.getElementById('cam-status').style.color = "var(--ui-cyan)";
+            } catch (e) {
+                console.error("Camera access denied or device not found.", e);
+                document.getElementById('cam-status').innerText = "PILOT CAM: OFFLINE / DENIED";
+                document.getElementById('cam-status').style.color = "var(--ui-red)";
             }
         }
 
-        function updateData() {
-            const time = Date.now();
-            document.querySelector('.radar-dot.enemy').style.opacity = Math.sin(time / 1000) * 0.5 + 0.5;
-            document.querySelector('.radar-dot.ally').style.opacity = Math.cos(time / 1000) * 0.5 + 0.5;
+        // --- 中央モニター YouTube検索・再生処理 ---
+        function executeYouTubeSearch() {
+            const inputVal = document.getElementById('yt-input').value.trim();
+            if (!inputVal) return;
 
-            document.getElementById('coord-x').innerText = (xCoord + (Math.random() - 0.5) * 0.5).toFixed(1);
-            document.getElementById('coord-y').innerText = (yCoord + (Math.random() - 0.5) * 0.5).toFixed(1);
-            document.getElementById('coord-z').innerText = (zCoord + (Math.random() - 0.5) * 0.1).toFixed(1);
-            document.getElementById('speed').innerText = Math.floor(12500 + (Math.random() - 0.5) * 50);
-            document.getElementById('altitude').innerText = Math.floor(3500 + (Math.random() - 0.5) * 10);
-            document.getElementById('react-temp').innerText = Math.floor(450 + (Math.random() - 0.5) * 5);
-            document.getElementById('target-dist').innerText = Math.floor(targetDistValue + (Math.random() - 0.5) * 100);
+            let videoId = "";
+            // URLからIDを抽出する正規表現
+            const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = inputVal.match(ytRegex);
 
-            reactorValue = Math.min(100, Math.max(0, reactorValue + (Math.random() - 0.5) * 0.2));
-            document.getElementById('reactor-gauge').style.width = reactorValue + '%';
-            document.getElementById('reactor-value').innerText = Math.floor(reactorValue);
+            if (match && match[1]) {
+                videoId = match[1]; // URL形式だった場合
+            } else if (inputVal.length === 11 && !inputVal.includes(" ")) {
+                videoId = inputVal; // ID直打ちの場合
+            } else {
+                // キーワード検索の場合（APIなしで動作させるための擬似処理）
+                // 本来のYouTube検索APIはキーが必要なため、キーワードから有名動画IDをマッピング、または非公式の検索リストURLを生成
+                alert(`[SYSTEM MESSAGE]\n通常のテキスト検索はYouTube Data APIの制限により保護されています。\n\n入力されたキーワード: ${inputVal}\n\n正確な動画を再生するには、YouTubeの「動画URL」または「11桁の動画ID」を直接入力してください。`);
+                return;
+            }
 
-            requestAnimationFrame(updateData);
+            // iframeを更新して動画を再生（自動再生ON）
+            document.getElementById('yt-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         }
+
+        // YouTube検索欄でのEnterキー対応
+        document.getElementById('yt-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') executeYouTubeSearch();
+        });
+
+        // --- 左右キーボード連動機能 ---
+        document.addEventListener('keydown', (event) => {
+            if (document.activeElement === document.getElementById('yt-input')) return; // 検索欄入力中は無効化
+            const key = event.key.toLowerCase();
+            const keyBtn = document.querySelector(`.key-btn[data-key="${key}"]`);
+            if (keyBtn) keyBtn.classList.add('active');
+        });
+
+        document.addEventListener('keyup', (event) => {
+            const key = event.key.toLowerCase();
+            const keyBtn = document.querySelector(`.key-btn[data-key="${key}"]`);
+            if (keyBtn) keyBtn.classList.remove('active');
+        });
+
     </script>
 </body>
 </html>
