@@ -3,401 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VULTURE NETWORK // A.W.0015 DATABASE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>A.W.0015 - G-CON TACTICAL INTERFACE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gx-cyan: #00ffcc;
-            --gx-cyan-dim: rgba(0, 255, 204, 0.2);
-            --bg-dark: #03080a;
-            --panel-bg: rgba(10, 20, 25, 0.6);
-            --text-main: #e0f7fa;
+            --cyan: #00f3ff;
+            --cyan-glow: rgba(0, 243, 255, 0.6);
+            --bg-base: #020508;
+            --panel-bg: rgba(5, 15, 20, 0.5);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Noto Sans JP', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.8;
+            background-color: var(--bg-base);
+            color: #fff;
             overflow-x: hidden;
-            /* CRTスキャンライン風エフェクト */
-            background-image: linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px);
-            background-size: 100% 4px;
+            /* スキャンラインエフェクト */
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
         }
 
-        h1, h2, h3, .mono {
-            font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
+        h1, h2, h3, .eng { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
+
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 10px; }
+
+        /* ヘッダー・グリッチエフェクト */
+        .glitch {
+            position: relative;
+            color: var(--cyan);
+            font-size: 3rem;
+            font-weight: 900;
+            text-shadow: 0 0 10px var(--cyan-glow);
+            animation: glitch-anim 3s infinite alternate;
         }
 
-        /* 共通アニメーション */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes glitch-anim {
+            0% { text-shadow: 0 0 10px var(--cyan-glow); transform: skew(0deg); }
+            2% { text-shadow: 2px 0 0 red, -2px 0 0 blue; transform: skew(-10deg); }
+            4% { text-shadow: 0 0 10px var(--cyan-glow); transform: skew(0deg); }
+            100% { text-shadow: 0 0 10px var(--cyan-glow); }
         }
 
-        /* ヘッダー・ナビゲーション */
-        header {
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            padding: 20px 40px;
-            background: rgba(3, 8, 10, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--gx-cyan-dim);
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .sys-title {
-            color: var(--gx-cyan);
-            font-size: 1.2rem;
-            letter-spacing: 0.2em;
-            text-shadow: 0 0 10px var(--gx-cyan);
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-
-        nav a {
-            color: var(--text-main);
-            text-decoration: none;
-            font-size: 0.9rem;
-            letter-spacing: 0.1em;
-            transition: color 0.3s;
-        }
-
-        nav a:hover { color: var(--gx-cyan); }
-
-        /* ヒーローセクション */
         .hero {
             height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
+            justify-content: center;
+            flex-direction: column;
             position: relative;
-            padding-top: 60px;
+            overflow: hidden;
         }
 
-        .hero::before {
+        .hero video {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%; min-height: 100%;
+            z-index: -2;
+            filter: contrast(1.2) brightness(0.7) hue-rotate(-10deg);
+        }
+
+        .hero::after {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            /* 荒廃した地球と宇宙のダミー背景 */
-            background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=80') center/cover;
-            opacity: 0.3;
+            background: radial-gradient(circle, transparent 20%, var(--bg-base) 90%);
             z-index: -1;
         }
 
-        .hero-title {
-            font-size: 4rem;
-            color: var(--gx-cyan);
-            letter-spacing: 0.3em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            letter-spacing: 0.5em;
-            color: #aaa;
-        }
-
-        /* コンテンツセクション共通 */
-        .section {
-            padding: 100px 10vw;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .section-header {
-            margin-bottom: 60px;
-            border-left: 4px solid var(--gx-cyan);
-            padding-left: 20px;
-        }
-
+        /* セクション共通 */
+        .section { padding: 100px 5vw; position: relative; }
         .section-title {
-            font-size: 2.5rem;
-            color: var(--gx-cyan);
-            letter-spacing: 0.1em;
+            font-size: 2.5rem; color: var(--cyan);
+            border-bottom: 2px solid var(--cyan);
+            display: inline-block; margin-bottom: 50px;
+            padding-right: 50px;
         }
 
-        .section-subtitle {
-            font-size: 1rem;
-            color: #888;
+        /* キャラクターセクション (ホログラム風カード) */
+        .char-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;
         }
-
-        /* グリッドレイアウト（組織・人物・機体用） */
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
-        .glass-panel {
+        
+        .char-card {
             background: var(--panel-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--gx-cyan-dim);
-            padding: 30px;
-            border-radius: 4px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 20px;
             position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
         }
 
-        .glass-panel:hover {
-            border-color: var(--gx-cyan);
-            box-shadow: 0 0 20px var(--gx-cyan-dim);
-            transform: translateY(-5px);
+        .char-card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+            transform: translateY(-10px);
         }
 
-        .glass-panel img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 1px solid var(--gx-cyan-dim);
-            margin-bottom: 20px;
-            filter: grayscale(80%) contrast(1.2);
+        .char-img {
+            width: 100%; height: 350px; object-fit: cover;
+            border-radius: 4px;
+            filter: grayscale(30%) contrast(1.2);
             transition: filter 0.5s;
         }
+        .char-card:hover .char-img { filter: grayscale(0%) contrast(1.1); }
 
-        .glass-panel:hover img {
-            filter: grayscale(0%) contrast(1);
-        }
-
-        .data-label {
-            font-size: 0.8rem;
-            color: var(--gx-cyan);
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .ext-link {
-            display: inline-block;
+        .voice-btn {
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
             margin-top: 15px;
-            color: var(--gx-cyan);
-            text-decoration: none;
-            font-size: 0.9rem;
-            border: 1px solid var(--gx-cyan);
-            padding: 5px 15px;
-            transition: all 0.3s;
+            width: 100%;
+            transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .ext-link:hover {
-            background: var(--gx-cyan);
-            color: var(--bg-dark);
+        .voice-btn:hover { background: var(--cyan); color: #000; }
+        .voice-btn::before { content: '▶'; font-size: 0.8rem; }
+
+        /* MSセクション (リッチUI・武装切り替え) */
+        .ms-container {
+            display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 80px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--cyan);
+            padding: 30px;
+            box-shadow: inset 0 0 50px rgba(0, 243, 255, 0.1);
         }
 
-        /* 年表スタイル */
-        .timeline-item {
-            display: flex;
-            margin-bottom: 30px;
-            background: rgba(255,255,255,0.02);
-            padding: 20px;
-            border-left: 2px solid #555;
-        }
-        .timeline-year {
-            font-family: 'Share Tech Mono', monospace;
-            color: var(--gx-cyan);
-            width: 120px;
-            flex-shrink: 0;
-            font-size: 1.2rem;
+        .ms-visual { flex: 1; min-width: 300px; position: relative; }
+        .ms-visual img {
+            width: 100%; height: auto;
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
         }
 
-        /* ビデオコンテナ */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
+        .ms-details { flex: 2; min-width: 300px; }
+        
+        .weapon-list { display: flex; gap: 10px; margin: 20px 0; }
+        .weapon-btn {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--cyan);
+            color: #fff; padding: 10px 15px; cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Noto Sans JP', sans-serif; font-weight: bold;
+        }
+        .weapon-btn.active, .weapon-btn:hover {
+            background: var(--cyan); color: #000;
+        }
+
+        .video-display {
+            width: 100%; height: 350px;
+            border: 2px solid var(--cyan);
+            background: #000; position: relative;
             overflow: hidden;
-            border: 1px solid var(--gx-cyan);
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.1);
         }
-        .video-container iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-        }
+        .video-display iframe { width: 100%; height: 100%; border: none; }
 
-        footer {
-            text-align: center;
-            padding: 40px;
-            border-top: 1px solid var(--gx-cyan-dim);
-            font-family: 'Share Tech Mono', monospace;
-            color: #666;
-            font-size: 0.9rem;
-        }
+        /* スクロールアニメーション */
+        .fade-in { opacity: 0; transform: translateY(30px); transition: 1s cubic-bezier(0.1, 0.8, 0.2, 1); }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="sys-title">G-CON // A.W.0015 TERMINAL</div>
-        <nav>
-            <ul>
-                <li><a href="#world">WORLD</a></li>
-                <li><a href="#timeline">TIMELINE</a></li>
-                <li><a href="#factions">FACTIONS</a></li>
-                <li><a href="#personnel">PERSONNEL</a></li>
-                <li><a href="#mobile-suits">MOBILE SUITS</a></li>
-            </ul>
-        </nav>
-    </header>
-
     <section class="hero">
-        <h1 class="hero-title">AFTER WAR 0015</h1>
-        <p class="hero-subtitle">DATA ARCHIVE & TACTICAL NETWORK</p>
-        <p class="mono" style="margin-top: 40px; color: var(--gx-cyan);">STATUS: CONNECTED / USER: VULTURE</p>
+        <video autoplay muted loop playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-galaxy-with-stars-in-the-universe-3171-large.mp4" type="video/mp4">
+        </video>
+        <div class="glitch">SYSTEM: G-CON</div>
+        <p class="eng" style="margin-top: 20px; font-size: 1.2rem; color: #aaa;">AFTER WAR 0015 / TACTICAL DATABASE</p>
     </section>
 
-    <section id="world" class="section">
-        <div class="section-header reveal">
-            <h2 class="section-title">01. WORLD SITUATION</h2>
-            <p class="section-subtitle">CURRENT STATE OF THE EARTH SPHERE</p>
-        </div>
-        <div class="glass-panel reveal" style="max-width: 900px; margin: 0 auto;">
-            <p>第七次宇宙戦争から15年。宇宙革命軍によって引き起こされた「コロニー落とし」は地球環境を徹底的に破壊し、100億を誇った総人口はわずか1億人弱へと激減した。<br><br>
-            深刻な核の冬を乗り越え、気候はようやく安定期に入りつつあるが、法と秩序は失われている。旧連邦軍の残骸やモビルスーツを発掘し、転売や武装に利用する「バルチャー」と呼ばれる者たちが各地で台頭し、力による弱肉強食の時代が続いている。</p>
-        </div>
-    </section>
+    <section class="section">
+        <h2 class="section-title fade-in">01. PERSONNEL & VOICE LOGS</h2>
+        <div class="char-grid fade-in">
+            <div class="char-card">
+                <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=2560&q=100" class="char-img" alt="Garrod">
+                <h3 class="eng" style="margin: 15px 0 5px; color: var(--cyan);">GARROD RAN</h3>
+                <p style="font-size: 0.9rem; color: #ccc;">「ガンダム、売るよ！」等。サバイバル能力に長けたジャンク屋の少年。</p>
+                <audio id="voice-garrod" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+                <button class="voice-btn" onclick="playVoice('voice-garrod')">PLAY VOICE DATA</button>
+            </div>
 
-    <section id="timeline" class="section">
-        <div class="section-header reveal">
-            <h2 class="section-title">02. CHRONOLOGY</h2>
-            <p class="section-subtitle">HISTORICAL RECORDS OF A.W.</p>
-        </div>
-        <div class="reveal" style="max-width: 900px; margin: 0 auto;">
-            <div class="timeline-item">
-                <div class="timeline-year">B.W.</div>
-                <div>旧地球連邦と、コロニー独立を掲げる宇宙革命軍の対立が激化。戦火は宇宙空間から地球全土へと拡大。</div>
+            <div class="char-card">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=2560&q=100" class="char-img" alt="Tiffa">
+                <h3 class="eng" style="margin: 15px 0 5px; color: var(--cyan);">TIFFA ADILL</h3>
+                <p style="font-size: 0.9rem; color: #ccc;">「あなたに、力を…」類稀なるニュータイプ能力を持つ謎の少女。</p>
+                <audio id="voice-tiffa" src="https://actions.google.com/sounds/v1/science_fiction/alien_breath.ogg"></audio>
+                <button class="voice-btn" onclick="playVoice('voice-tiffa')">PLAY VOICE DATA</button>
             </div>
-            <div class="timeline-item">
-                <div class="timeline-year">A.W.0001</div>
-                <div><strong>第7次宇宙戦争 終結。</strong><br>連邦軍の「ガンダム」投入に対し、革命軍は質量兵器として数十基のコロニーを地球へ落下させる作戦を強行。人類の99%が死滅する。</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-year">A.W.0015</div>
-                <div>現在。各地でバルチャーが活動。旧連邦の新組織「新連邦政府」設立の動きや、革命軍の残党の暗躍が確認されている。</div>
-            </div>
-        </div>
-    </section>
 
-    <section id="factions" class="section">
-        <div class="section-header reveal">
-            <h2 class="section-title">03. FACTIONS</h2>
-            <p class="section-subtitle">KNOWN ORGANIZATIONS</p>
-        </div>
-        <div class="grid-3">
-            <div class="glass-panel reveal">
-                <span class="data-label">INDEPENDENT GROUP</span>
-                <h3>VULTURES (バルチャー)</h3>
-                <p>旧時代の遺産（モビルスーツや兵器）を発掘・売買して生計を立てる武装集団。中でも陸上戦艦「フリーデン」は、極めて高い戦力を保持しているとの情報が絶えない。</p>
-            </div>
-            <div class="glass-panel reveal">
-                <span class="data-label">EARTH SPHERE AUTHORITY (UNCONFIRMED)</span>
-                <h3>NEW U.N.E. (新連邦政府)</h3>
-                <p>崩壊した旧地球連邦の再建を目論む勢力。地球上の統一政府樹立を目指し、強力な軍事力を背景に各地の統合を進めようとしている。</p>
-            </div>
-            <div class="glass-panel reveal">
-                <span class="data-label">SPACE FORCES</span>
-                <h3>S.R.A. (宇宙革命軍)</h3>
-                <p>コロニー「クラウド9」を本拠地とする軍事国家。ザイデル・ラッソ率いる残党勢力は、未だに地球圏の制圧を諦めておらず、水面下で戦力増強を図っている。</p>
+            <div class="char-card">
+                <img src="https://images.unsplash.com/photo-1605369572399-05d8d64a0f6e?auto=format&fit=crop&w=2560&q=100" class="char-img" alt="Jamil">
+                <h3 class="eng" style="margin: 15px 0 5px; color: var(--cyan);">JAMIL NEATE</h3>
+                <p style="font-size: 0.9rem; color: #ccc;">「過ちは繰り返させない！」フリーデン艦長。かつての英雄。</p>
+                <audio id="voice-jamil" src="https://actions.google.com/sounds/v1/science_fiction/robot_code.ogg"></audio>
+                <button class="voice-btn" onclick="playVoice('voice-jamil')">PLAY VOICE DATA</button>
             </div>
         </div>
     </section>
 
-    <section id="personnel" class="section">
-        <div class="section-header reveal">
-            <h2 class="section-title">04. PERSONNEL DATA</h2>
-            <p class="section-subtitle">HIGH-PRIORITY TARGETS (FREEDEN CREW)</p>
-        </div>
-        <div class="grid-3">
-            <div class="glass-panel reveal">
-                <img src="https://images.unsplash.com/photo-1542157585-ef20bfcce579?auto=format&fit=crop&w=600&q=80" alt="Garrod">
-                <h3>ガロード・ラン (Garrod Ran)</h3>
-                <p>モビルスーツの知識と操縦技術に長けたジャンク屋の少年。ティファとの出会いを機に、幻の機体「ガンダムX」のパイロットとなる。</p>
-            </div>
-            <div class="glass-panel reveal">
-                <img src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80" alt="Tiffa">
-                <h3>ティファ・アディール (Tiffa Adill)</h3>
-                <p>「ニュータイプ」の力を持つとされる謎めいた少女。その能力を巡り、様々な組織から身柄を狙われている。</p>
-            </div>
-            <div class="glass-panel reveal">
-                <img src="https://images.unsplash.com/photo-1605369572399-05d8d64a0f6e?auto=format&fit=crop&w=600&q=80" alt="Jamil">
-                <h3>ジャミル・ニート (Jamil Neate)</h3>
-                <p>バルチャー艦「フリーデン」の艦長。第7次宇宙戦争において旧連邦軍のエースとして活躍した過去を持つ。</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="mobile-suits" class="section">
-        <div class="section-header reveal">
-            <h2 class="section-title">05. MOBILE SUITS</h2>
-            <p class="section-subtitle">TACTICAL ASSET DATABASE & COMBAT FOOTAGE</p>
-        </div>
+    <section class="section">
+        <h2 class="section-title fade-in">02. TACTICAL ASSETS & WEAPONS</h2>
         
-        <div class="grid-3" style="margin-bottom: 50px;">
-            <div class="glass-panel reveal">
-                <span class="data-label">GX-9900</span>
-                <img src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=600&q=80" alt="GX">
-                <h3>GUNDAM X</h3>
-                <p>旧連邦軍の決戦用MS。月面の太陽光発電施設から送信されるマイクロウェーブを受信し、絶大な破壊力を誇る「サテライトキャノン」を発射可能。</p>
-                <a href="https://gundam.fandom.com/wiki/GX-9900_Gundam_X" target="_blank" class="ext-link">▶ EXTERNAL WIKI DATA</a>
+        <div class="ms-container fade-in">
+            <div class="ms-visual">
+                <img src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=2560&q=100" alt="Gundam X">
             </div>
-            <div class="glass-panel reveal">
-                <span class="data-label">GW-9800</span>
-                <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=600&q=80" alt="Airmaster">
-                <h3>GUNDAM AIRMASTER</h3>
-                <p>高機動戦闘に特化した可変MS。ファイターモードへの変形により、大気圏内での圧倒的な空中戦能力を発揮する。</p>
-                <a href="https://gundam-official.com/series/x" target="_blank" class="ext-link">▶ OFFICIAL SITE SEARCH</a>
-            </div>
-            <div class="glass-panel reveal">
-                <span class="data-label">GT-9600</span>
-                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80" alt="Leopard">
-                <h3>GUNDAM LEOPARD</h3>
-                <p>全身に火器を内蔵した重武装MS。インナーアームガトリング等により、単機での拠点防衛・面制圧を可能とする。</p>
-                <a href="https://www.google.com/search?q=%E3%82%AC%E3%83%B3%E3%83%80%E3%83%A0%E3%83%AC%E3%82%AA%E3%83%91%E3%83%AB%E3%83%89+%E7%94%BB%E5%83%8F" target="_blank" class="ext-link">▶ GOOGLE IMAGE SEARCH</a>
+            <div class="ms-details">
+                <h3 class="eng" style="font-size: 2rem; color: var(--cyan);">GX-9900 GUNDAM X</h3>
+                <p style="margin-top: 10px; color: #ddd;">旧連邦軍の決戦兵器。背部にリフレクターを装備し、月面からのエネルギーを受信する。</p>
+                
+                <div class="weapon-list">
+                    <button class="weapon-btn active" onclick="switchVideo('gx-video', 'https://www.youtube.com/embed/DB2gMQ5ee2Y?start=15&autoplay=1&mute=1', this)">サテライトキャノン</button>
+                    <button class="weapon-btn" onclick="switchVideo('gx-video', 'https://www.youtube.com/embed/DB2gMQ5ee2Y?start=45&autoplay=1&mute=1', this)">シールドバスターライフル</button>
+                    <button class="weapon-btn" onclick="switchVideo('gx-video', 'https://www.youtube.com/embed/DB2gMQ5ee2Y?start=60&autoplay=1&mute=1', this)">ビームソード</button>
+                </div>
+                
+                <div class="video-display">
+                    <iframe id="gx-video" src="https://www.youtube.com/embed/DB2gMQ5ee2Y?start=15&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
 
-        <div class="reveal">
-            <span class="data-label">INTERCEPTED VIDEO SIGNAL: 4K COMBAT DATA RECORDING</span>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/DB2gMQ5ee2Y" title="Gundam X Video Data" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="ms-container fade-in">
+            <div class="ms-visual">
+                <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=2560&q=100" alt="Airmaster">
             </div>
-            <p style="text-align: right; font-size: 0.8rem; margin-top: 10px; color: #666;">※Google検索経由 収集ダミー動画</p>
+            <div class="ms-details">
+                <h3 class="eng" style="font-size: 2rem; color: var(--cyan);">GW-9800 GUNDAM AIRMASTER</h3>
+                <p style="margin-top: 10px; color: #ddd;">大気圏内での空戦に特化した可変MS。ファイターモードによる一撃離脱戦法を得意とする。</p>
+                
+                <div class="weapon-list">
+                    <button class="weapon-btn active" onclick="switchVideo('air-video', 'https://www.youtube.com/embed/M1oB4Pntf0s?start=10&autoplay=1&mute=1', this)">バスターライフル</button>
+                    <button class="weapon-btn" onclick="switchVideo('air-video', 'https://www.youtube.com/embed/M1oB4Pntf0s?start=30&autoplay=1&mute=1', this)">ショルダーミサイル</button>
+                </div>
+                
+                <div class="video-display">
+                    <iframe id="air-video" src="https://www.youtube.com/embed/M1oB4Pntf0s?start=10&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+            </div>
         </div>
     </section>
-
-    <footer>
-        <p>A.W.0015 VULTURE NETWORK SECURE TERMINAL</p>
-        <p style="font-size: 0.7rem; color: #444;">※This is a demonstration mockup utilizing modern web architecture.</p>
-    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const reveals = document.querySelectorAll('.reveal');
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { root: null, threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+        // スクロールアニメーション（フェードイン）
+        const faders = document.querySelectorAll('.fade-in');
+        const appearOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
+        const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            });
+        }, appearOptions);
 
-            reveals.forEach(reveal => observer.observe(reveal));
-        });
+        faders.forEach(fader => appearOnScroll.observe(fader));
+
+        // ボイス再生機能
+        function playVoice(audioId) {
+            // 他の音声を停止
+            document.querySelectorAll('audio').forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+            // 選択された音声を再生
+            const targetAudio = document.getElementById(audioId);
+            if (targetAudio) {
+                targetAudio.play().catch(error => {
+                    alert("ブラウザの自動再生ブロックにより音声が再生できませんでした。");
+                });
+            }
+        }
+
+        // 武装動画切り替え機能
+        function switchVideo(iframeId, videoUrl, btnElement) {
+            // iframeのソースを更新
+            document.getElementById(iframeId).src = videoUrl;
+            
+            // ボタンのアクティブ状態を更新
+            const btns = btnElement.parentElement.querySelectorAll('.weapon-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
     </script>
 </body>
 </html>
