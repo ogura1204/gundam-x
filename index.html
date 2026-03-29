@@ -2,302 +2,296 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A.W.0015 - G-CON TACTICAL INTERFACE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MS COCKPIT UI - G-CON SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --cyan: #00f3ff;
-            --cyan-glow: rgba(0, 243, 255, 0.6);
-            --bg-base: #020508;
-            --panel-bg: rgba(5, 15, 20, 0.5);
+            --ui-cyan: #00f3ff;
+            --ui-red: #ff003c;
+            --ui-orange: #ffaa00;
+            --bg-dark: #030508;
+            --panel-bg: rgba(10, 15, 20, 0.85);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        /* ページ全体の固定化（スクロール完全禁止） */
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; }
+        
         body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: var(--bg-base);
-            color: #fff;
-            overflow-x: hidden;
+            width: 100vw; height: 100vh;
+            background-color: #000;
+            overflow: hidden; /* スクロールなし */
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--ui-cyan);
+            user-select: none;
             /* スキャンラインエフェクト */
-            background-image: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.15),
-                rgba(0, 0, 0, 0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
+            background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2) 1px, transparent 1px, transparent 2px);
+            z-index: 10;
         }
 
-        h1, h2, h3, .eng { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
+        /* 縦画面時の警告オーバーレイ（SP横画面専用制約） */
+        #portrait-warning {
+            display: none;
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 9999;
+            flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        }
+        @media screen and (orientation: portrait) {
+            #portrait-warning { display: flex; }
+            #cockpit-wrapper { display: none !important; }
+        }
 
-        /* カスタムスクロールバー */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 10px; }
-
-        /* ヘッダー・グリッチエフェクト */
-        .glitch {
+        /* コックピットレイアウト */
+        #cockpit-wrapper {
+            display: grid;
+            grid-template-rows: 15vh 60vh 25vh;
+            grid-template-columns: 25vw 50vw 25vw;
+            width: 100vw; height: 100vh;
             position: relative;
-            color: var(--cyan);
-            font-size: 3rem;
-            font-weight: 900;
-            text-shadow: 0 0 10px var(--cyan-glow);
-            animation: glitch-anim 3s infinite alternate;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.9) 100%);
+            animation: bootUp 2s ease-out forwards;
         }
 
-        @keyframes glitch-anim {
-            0% { text-shadow: 0 0 10px var(--cyan-glow); transform: skew(0deg); }
-            2% { text-shadow: 2px 0 0 red, -2px 0 0 blue; transform: skew(-10deg); }
-            4% { text-shadow: 0 0 10px var(--cyan-glow); transform: skew(0deg); }
-            100% { text-shadow: 0 0 10px var(--cyan-glow); }
+        @keyframes bootUp {
+            0% { filter: brightness(0); transform: scale(0.95); }
+            50% { filter: brightness(1.5) contrast(1.2); }
+            100% { filter: brightness(1) contrast(1); transform: scale(1); }
         }
 
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero video {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 100%; min-height: 100%;
-            z-index: -2;
-            filter: contrast(1.2) brightness(0.7) hue-rotate(-10deg);
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 20%, var(--bg-base) 90%);
-            z-index: -1;
-        }
-
-        /* セクション共通 */
-        .section { padding: 100px 5vw; position: relative; }
-        .section-title {
-            font-size: 2.5rem; color: var(--cyan);
-            border-bottom: 2px solid var(--cyan);
-            display: inline-block; margin-bottom: 50px;
-            padding-right: 50px;
-        }
-
-        /* キャラクターセクション (ホログラム風カード) */
-        .char-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;
-        }
-        
-        .char-card {
+        /* パネル共通スタイル */
+        .panel {
             background: var(--panel-bg);
-            border: 1px solid rgba(0, 243, 255, 0.2);
+            border: 2px solid rgba(0, 243, 255, 0.3);
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 8px;
-            padding: 20px;
             position: relative;
-            transition: all 0.4s ease;
-        }
-
-        .char-card:hover {
-            border-color: var(--cyan);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
-            transform: translateY(-10px);
-        }
-
-        .char-img {
-            width: 100%; height: 350px; object-fit: cover;
-            border-radius: 4px;
-            filter: grayscale(30%) contrast(1.2);
-            transition: filter 0.5s;
-        }
-        .char-card:hover .char-img { filter: grayscale(0%) contrast(1.1); }
-
-        .voice-btn {
-            background: transparent;
-            color: var(--cyan);
-            border: 1px solid var(--cyan);
-            padding: 10px 20px;
-            font-family: 'Orbitron', sans-serif;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-            transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .voice-btn:hover { background: var(--cyan); color: #000; }
-        .voice-btn::before { content: '▶'; font-size: 0.8rem; }
-
-        /* MSセクション (リッチUI・武装切り替え) */
-        .ms-container {
-            display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 80px;
-            background: rgba(0,0,0,0.6);
-            border: 1px solid var(--cyan);
-            padding: 30px;
-            box-shadow: inset 0 0 50px rgba(0, 243, 255, 0.1);
-        }
-
-        .ms-visual { flex: 1; min-width: 300px; position: relative; }
-        .ms-visual img {
-            width: 100%; height: auto;
-            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
-        }
-
-        .ms-details { flex: 2; min-width: 300px; }
-        
-        .weapon-list { display: flex; gap: 10px; margin: 20px 0; }
-        .weapon-btn {
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--cyan);
-            color: #fff; padding: 10px 15px; cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Noto Sans JP', sans-serif; font-weight: bold;
-        }
-        .weapon-btn.active, .weapon-btn:hover {
-            background: var(--cyan); color: #000;
-        }
-
-        .video-display {
-            width: 100%; height: 350px;
-            border: 2px solid var(--cyan);
-            background: #000; position: relative;
             overflow: hidden;
         }
-        .video-display iframe { width: 100%; height: 100%; border: none; }
 
-        /* スクロールアニメーション */
-        .fade-in { opacity: 0; transform: translateY(30px); transition: 1s cubic-bezier(0.1, 0.8, 0.2, 1); }
-        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .panel::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--ui-cyan); box-shadow: 0 0 10px var(--ui-cyan);
+        }
+
+        /* 上部HUD */
+        #hud-top {
+            grid-column: 1 / 4; grid-row: 1 / 2;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 10px 30px; border-bottom: none;
+            clip-path: polygon(0 0, 100% 0, 100% 60%, 80% 100%, 20% 100%, 0 60%);
+            background: linear-gradient(180deg, rgba(0,243,255,0.1) 0%, transparent 100%);
+        }
+
+        /* メインモニター（中央） */
+        #main-monitor {
+            grid-column: 2 / 3; grid-row: 2 / 3;
+            margin: 0 10px;
+            border: 2px solid var(--ui-cyan);
+            box-shadow: 0 0 30px rgba(0,243,255,0.2);
+            position: relative;
+        }
+        
+        #main-video {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: opacity 0.5s;
+        }
+
+        /* ターゲットUIオーバーレイ */
+        .target-reticle {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40vh; height: 40vh;
+            border: 2px dashed rgba(0, 243, 255, 0.5);
+            border-radius: 50%;
+            animation: rotateTarget 10s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes rotateTarget { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* サブモニター（左：機体ステータス画像） */
+        #sub-monitor-left {
+            grid-column: 1 / 2; grid-row: 2 / 3;
+            margin-left: 10px;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%);
+        }
+        
+        #sub-img-left {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: hue-rotate(180deg) brightness(1.2) contrast(1.5);
+            transition: all 0.5s;
+        }
+
+        /* サブモニター（右：レーダー＆データ） */
+        #sub-monitor-right {
+            grid-column: 3 / 4; grid-row: 2 / 3;
+            margin-right: 10px;
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
+            padding: 15px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        /* コンソールパネル（下部：ボタン群） */
+        #console-panel {
+            grid-column: 1 / 4; grid-row: 3 / 4;
+            display: flex; justify-content: space-around; align-items: center;
+            background: linear-gradient(0deg, rgba(0,243,255,0.1) 0%, transparent 100%);
+            border-top: 2px solid var(--ui-cyan);
+            padding: 10px 50px;
+        }
+
+        /* アニメーションボタン */
+        .cockpit-btn {
+            background: rgba(0,0,0,0.6);
+            border: 2px solid var(--ui-cyan);
+            color: var(--ui-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem; font-weight: bold;
+            padding: 15px 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        }
+
+        .cockpit-btn:hover, .cockpit-btn.active {
+            background: var(--ui-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--ui-cyan);
+            transform: scale(1.05);
+        }
+
+        .cockpit-btn.danger { border-color: var(--ui-red); color: var(--ui-red); }
+        .cockpit-btn.danger:hover, .cockpit-btn.danger.active {
+            background: var(--ui-red); color: #fff; box-shadow: 0 0 20px var(--ui-red);
+        }
+
+        /* データスクロールアニメーション */
+        .data-stream {
+            font-size: 0.8rem; line-height: 1.2; height: 100px; overflow: hidden;
+        }
+        .data-stream span {
+            display: block; animation: scrollData 2s linear infinite;
+        }
+        @keyframes scrollData {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
 
     </style>
 </head>
 <body>
 
-    <section class="hero">
-        <video autoplay muted loop playsinline>
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-galaxy-with-stars-in-the-universe-3171-large.mp4" type="video/mp4">
-        </video>
-        <div class="glitch">SYSTEM: G-CON</div>
-        <p class="eng" style="margin-top: 20px; font-size: 1.2rem; color: #aaa;">AFTER WAR 0015 / TACTICAL DATABASE</p>
-    </section>
+    <div id="portrait-warning">
+        <h2 style="font-family: 'Orbitron', sans-serif; color: var(--ui-red); font-size: 2rem; margin-bottom: 20px;">SYSTEM ALERT</h2>
+        <p>PLEASE ROTATE YOUR DEVICE TO LANDSCAPE MODE.<br>コックピットモニターは横画面専用です。</p>
+    </div>
 
-    <section class="section">
-        <h2 class="section-title fade-in">01. PERSONNEL & VOICE LOGS</h2>
-        <div class="char-grid fade-in">
-            <div class="char-card">
-                <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=2560&q=100" class="char-img" alt="Garrod">
-                <h3 class="eng" style="margin: 15px 0 5px; color: var(--cyan);">GARROD RAN</h3>
-                <p style="font-size: 0.9rem; color: #ccc;">「ガンダム、売るよ！」等。サバイバル能力に長けたジャンク屋の少年。</p>
-                <audio id="voice-garrod" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
-                <button class="voice-btn" onclick="playVoice('voice-garrod')">PLAY VOICE DATA</button>
-            </div>
-
-            <div class="char-card">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=2560&q=100" class="char-img" alt="Tiffa">
-                <h3 class="eng" style="margin: 15px 0 5px; color: var(--cyan);">TIFFA ADILL</h3>
-                <p style="font-size: 0.9rem; color: #ccc;">「あなたに、力を…」類稀なるニュータイプ能力を持つ謎の少女。</p>
-                <audio id="voice-tiffa" src="https://actions.google.com/sounds/v1/science_fiction/alien_breath.ogg"></audio>
-                <button class="voice-btn" onclick="playVoice('voice-tiffa')">PLAY VOICE DATA</button>
-            </div>
-
-            <div class="char-card">
-                <img src="https://images.unsplash.com/photo-1605369572399-05d8d64a0f6e?auto=format&fit=crop&w=2560&q=100" class="char-img" alt="Jamil">
-                <h3 class="eng" style="margin: 15px 0 5px; color: var(--cyan);">JAMIL NEATE</h3>
-                <p style="font-size: 0.9rem; color: #ccc;">「過ちは繰り返させない！」フリーデン艦長。かつての英雄。</p>
-                <audio id="voice-jamil" src="https://actions.google.com/sounds/v1/science_fiction/robot_code.ogg"></audio>
-                <button class="voice-btn" onclick="playVoice('voice-jamil')">PLAY VOICE DATA</button>
-            </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <h2 class="section-title fade-in">02. TACTICAL ASSETS & WEAPONS</h2>
+    <div id="cockpit-wrapper">
         
-        <div class="ms-container fade-in">
-            <div class="ms-visual">
-                <img src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=2560&q=100" alt="Gundam X">
-            </div>
-            <div class="ms-details">
-                <h3 class="eng" style="font-size: 2rem; color: var(--cyan);">GX-9900 GUNDAM X</h3>
-                <p style="margin-top: 10px; color: #ddd;">旧連邦軍の決戦兵器。背部にリフレクターを装備し、月面からのエネルギーを受信する。</p>
-                
-                <div class="weapon-list">
-                    <button class="weapon-btn active" onclick="switchVideo('gx-video', 'https://www.youtube.com/embed/DB2gMQ5ee2Y?start=15&autoplay=1&mute=1', this)">サテライトキャノン</button>
-                    <button class="weapon-btn" onclick="switchVideo('gx-video', 'https://www.youtube.com/embed/DB2gMQ5ee2Y?start=45&autoplay=1&mute=1', this)">シールドバスターライフル</button>
-                    <button class="weapon-btn" onclick="switchVideo('gx-video', 'https://www.youtube.com/embed/DB2gMQ5ee2Y?start=60&autoplay=1&mute=1', this)">ビームソード</button>
-                </div>
-                
-                <div class="video-display">
-                    <iframe id="gx-video" src="https://www.youtube.com/embed/DB2gMQ5ee2Y?start=15&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                </div>
+        <div id="hud-top">
+            <div style="font-size: 1.5rem; font-family: 'Orbitron'; font-weight: 900;">SYS_G-CON <span style="font-size: 0.8rem; color:#fff;">v1.0.5</span></div>
+            <div style="text-align: right; color: var(--ui-orange);">
+                ALERT STATUS: <span id="alert-status">NORMAL</span><br>
+                <span style="font-size: 0.8rem;">COORDINATES: X:482.1 Y:901.4 Z:-12.8</span>
             </div>
         </div>
 
-        <div class="ms-container fade-in">
-            <div class="ms-visual">
-                <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=2560&q=100" alt="Airmaster">
-            </div>
-            <div class="ms-details">
-                <h3 class="eng" style="font-size: 2rem; color: var(--cyan);">GW-9800 GUNDAM AIRMASTER</h3>
-                <p style="margin-top: 10px; color: #ddd;">大気圏内での空戦に特化した可変MS。ファイターモードによる一撃離脱戦法を得意とする。</p>
-                
-                <div class="weapon-list">
-                    <button class="weapon-btn active" onclick="switchVideo('air-video', 'https://www.youtube.com/embed/M1oB4Pntf0s?start=10&autoplay=1&mute=1', this)">バスターライフル</button>
-                    <button class="weapon-btn" onclick="switchVideo('air-video', 'https://www.youtube.com/embed/M1oB4Pntf0s?start=30&autoplay=1&mute=1', this)">ショルダーミサイル</button>
-                </div>
-                
-                <div class="video-display">
-                    <iframe id="air-video" src="https://www.youtube.com/embed/M1oB4Pntf0s?start=10&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                </div>
+        <div id="sub-monitor-left" class="panel">
+            <div style="position: absolute; top:10px; left:10px; background: rgba(0,0,0,0.8); padding: 5px;">TACTICAL MAP</div>
+            <img id="sub-img-left" src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100" alt="Tactical Data">
+        </div>
+
+        <div id="main-monitor" class="panel">
+            <video id="main-video" autoplay muted loop playsinline>
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-galaxy-with-stars-in-the-universe-3171-large.mp4" type="video/mp4">
+            </video>
+            <div class="target-reticle" id="reticle"></div>
+            <div style="position: absolute; bottom: 20px; left: 20px; font-size: 1.5rem; font-family: 'Orbitron'; text-shadow: 2px 2px #000;">
+                MODE: <span id="mode-display" style="color:#fff;">CRUISE</span>
             </div>
         </div>
-    </section>
+
+        <div id="sub-monitor-right" class="panel">
+            <h3 style="border-bottom: 1px solid var(--ui-cyan); margin-bottom: 10px;">SYSTEM LOG</h3>
+            <div class="data-stream" id="system-log">
+                <span>> BOOTING G-CON OS...</span>
+                <span>> ALL SYSTEMS GREEN.</span>
+                <span>> MICROWAVE RECEIVER STABLE.</span>
+                <span>> SCANNING AREA...</span>
+            </div>
+            <div style="margin-top: 20px; width: 100px; height: 100px; border: 2px solid var(--ui-cyan); border-radius: 50%; position: relative; margin-left: auto; margin-right: auto;">
+                <div style="position: absolute; top:50%; left:50%; width:50%; height:2px; background:var(--ui-cyan); transform-origin: left; animation: rotateTarget 2s linear infinite;"></div>
+            </div>
+        </div>
+
+        <div id="console-panel">
+            <button class="cockpit-btn active" onclick="switchMode('cruise', this)">CRUISE MODE</button>
+            <button class="cockpit-btn" onclick="switchMode('combat', this)">COMBAT MODE</button>
+            <button class="cockpit-btn danger" onclick="switchMode('satellite', this)">SATELLITE CANNON</button>
+        </div>
+        
+    </div>
 
     <script>
-        // スクロールアニメーション（フェードイン）
-        const faders = document.querySelectorAll('.fade-in');
-        const appearOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
-        const appearOnScroll = new IntersectionObserver(function(entries, observer) {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            });
-        }, appearOptions);
-
-        faders.forEach(fader => appearOnScroll.observe(fader));
-
-        // ボイス再生機能
-        function playVoice(audioId) {
-            // 他の音声を停止
-            document.querySelectorAll('audio').forEach(audio => {
-                audio.pause();
-                audio.currentTime = 0;
-            });
-            // 選択された音声を再生
-            const targetAudio = document.getElementById(audioId);
-            if (targetAudio) {
-                targetAudio.play().catch(error => {
-                    alert("ブラウザの自動再生ブロックにより音声が再生できませんでした。");
-                });
-            }
-        }
-
-        // 武装動画切り替え機能
-        function switchVideo(iframeId, videoUrl, btnElement) {
-            // iframeのソースを更新
-            document.getElementById(iframeId).src = videoUrl;
-            
-            // ボタンのアクティブ状態を更新
-            const btns = btnElement.parentElement.querySelectorAll('.weapon-btn');
-            btns.forEach(btn => btn.classList.remove('active'));
+        // ボタン操作による各モニターの動的切り替え制御
+        function switchMode(mode, btnElement) {
+            // ボタンのアクティブ状態リセット
+            const buttons = document.querySelectorAll('.cockpit-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
+
+            // DOM要素の取得
+            const video = document.getElementById('main-video');
+            const subImg = document.getElementById('sub-img-left');
+            const modeDisplay = document.getElementById('mode-display');
+            const alertStatus = document.getElementById('alert-status');
+            const reticle = document.getElementById('reticle');
+
+            // トランジション用のフェードアウト
+            video.style.opacity = 0;
+            subImg.style.opacity = 0;
+
+            setTimeout(() => {
+                if (mode === 'cruise') {
+                    // 通常巡航モード
+                    video.src = "https://assets.mixkit.co/videos/preview/mixkit-galaxy-with-stars-in-the-universe-3171-large.mp4";
+                    subImg.src = "https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100";
+                    subImg.style.filter = "hue-rotate(180deg) brightness(1.2) contrast(1.5)";
+                    modeDisplay.innerText = "CRUISE";
+                    modeDisplay.style.color = "#fff";
+                    alertStatus.innerText = "NORMAL";
+                    alertStatus.style.color = "var(--ui-orange)";
+                    reticle.style.borderColor = "rgba(0, 243, 255, 0.5)";
+                    
+                } else if (mode === 'combat') {
+                    // 戦闘モード（高速移動/戦闘的な動画・画像へ切り替え）
+                    video.src = "https://assets.mixkit.co/videos/preview/mixkit-entering-a-hyperspace-jump-in-outer-space-3162-large.mp4";
+                    subImg.src = "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=3840&q=100";
+                    subImg.style.filter = "hue-rotate(0deg) brightness(1.5) contrast(1.8)";
+                    modeDisplay.innerText = "COMBAT";
+                    modeDisplay.style.color = "var(--ui-orange)";
+                    alertStatus.innerText = "ENGAGED";
+                    alertStatus.style.color = "var(--ui-orange)";
+                    reticle.style.borderColor = "var(--ui-orange)";
+
+                } else if (mode === 'satellite') {
+                    // サテライトキャノン発射モード（赤警告・エネルギー充填動画へ切り替え）
+                    video.src = "https://assets.mixkit.co/videos/preview/mixkit-fire-flames-burning-in-slow-motion-4034-large.mp4";
+                    subImg.src = "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=3840&q=100";
+                    subImg.style.filter = "sepia(1) hue-rotate(-50deg) saturate(3) brightness(1.2)";
+                    modeDisplay.innerText = "SATELLITE SYSTEM";
+                    modeDisplay.style.color = "var(--ui-red)";
+                    alertStatus.innerText = "DANGER / CHARGING";
+                    alertStatus.style.color = "var(--ui-red)";
+                    reticle.style.borderColor = "var(--ui-red)";
+                }
+
+                // フェードイン
+                video.style.opacity = 1;
+                subImg.style.opacity = 1;
+            }, 500); // フェードアウトの時間に合わせて切り替え
         }
     </script>
 </body>
