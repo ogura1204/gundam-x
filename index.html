@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MS COCKPIT UI - G-CON SYSTEM</title>
+    <title>MS COCKPIT UI - G-CON ADVANCED SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
             --ui-cyan: #00f3ff;
+            --ui-cyan-dim: rgba(0, 243, 255, 0.4);
+            --ui-cyan-glow: rgba(0, 243, 255, 0.8);
             --ui-red: #ff003c;
+            --ui-red-glow: rgba(255, 0, 60, 0.8);
             --ui-orange: #ffaa00;
+            --ui-orange-glow: rgba(255, 170, 0, 0.8);
             --bg-dark: #030508;
-            --panel-bg: rgba(10, 15, 20, 0.85);
+            --panel-bg: rgba(10, 15, 20, 0.9);
         }
 
         /* ページ全体の固定化（スクロール完全禁止） */
@@ -25,7 +29,7 @@
             color: var(--ui-cyan);
             user-select: none;
             /* スキャンラインエフェクト */
-            background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2) 1px, transparent 1px, transparent 2px);
+            background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
             z-index: 10;
         }
 
@@ -44,8 +48,8 @@
         /* コックピットレイアウト */
         #cockpit-wrapper {
             display: grid;
-            grid-template-rows: 15vh 60vh 25vh;
-            grid-template-columns: 25vw 50vw 25vw;
+            grid-template-rows: 12vh 63vh 25vh;
+            grid-template-columns: 20vw 60vw 20vw;
             width: 100vw; height: 100vh;
             position: relative;
             background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.9) 100%);
@@ -61,33 +65,33 @@
         /* パネル共通スタイル */
         .panel {
             background: var(--panel-bg);
-            border: 2px solid rgba(0, 243, 255, 0.3);
-            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
-            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 243, 255, 0.2);
+            box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.05);
+            backdrop-filter: blur(15px);
             position: relative;
             overflow: hidden;
         }
 
         .panel::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--ui-cyan); box-shadow: 0 0 10px var(--ui-cyan);
+            background: var(--ui-cyan); box-shadow: 0 0 15px var(--ui-cyan);
         }
 
         /* 上部HUD */
         #hud-top {
             grid-column: 1 / 4; grid-row: 1 / 2;
             display: flex; justify-content: space-between; align-items: flex-start;
-            padding: 10px 30px; border-bottom: none;
-            clip-path: polygon(0 0, 100% 0, 100% 60%, 80% 100%, 20% 100%, 0 60%);
-            background: linear-gradient(180deg, rgba(0,243,255,0.1) 0%, transparent 100%);
+            padding: 10px 40px; border-bottom: none;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 15% 100%, 0 70%);
+            background: linear-gradient(180deg, rgba(0,243,255,0.08) 0%, transparent 100%);
         }
 
         /* メインモニター（中央） */
         #main-monitor {
             grid-column: 2 / 3; grid-row: 2 / 3;
-            margin: 0 10px;
+            margin: 0 15px;
             border: 2px solid var(--ui-cyan);
-            box-shadow: 0 0 30px rgba(0,243,255,0.2);
+            box-shadow: 0 0 50px rgba(0,243,255,0.15);
             position: relative;
         }
         
@@ -100,107 +104,169 @@
         .target-reticle {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 40vh; height: 40vh;
-            border: 2px dashed rgba(0, 243, 255, 0.5);
+            width: 50vh; height: 50vh;
+            border: 3px dashed rgba(0, 243, 255, 0.4);
             border-radius: 50%;
-            animation: rotateTarget 10s linear infinite;
+            animation: rotateTarget 12s linear infinite;
             pointer-events: none;
         }
+        .target-reticle::before, .target-reticle::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 5vh; height: 5vh; border: 3px solid rgba(0, 243, 255, 0.6);
+            border-radius: 50%;
+        }
+        .target-reticle::after { width: 1.5vh; height: 1.5vh; background: rgba(0, 243, 255, 0.3); }
+
         @keyframes rotateTarget { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* サブモニター（左：機体ステータス画像） */
+        /* サブモニター（左：機体ステータス・計器） */
         #sub-monitor-left {
             grid-column: 1 / 2; grid-row: 2 / 3;
-            margin-left: 10px;
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 80%);
+            margin-left: 15px;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 25% 100%, 0 85%);
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
         }
         
         #sub-img-left {
-            width: 100%; height: 100%; object-fit: cover;
-            filter: hue-rotate(180deg) brightness(1.2) contrast(1.5);
+            width: 100%; height: auto; object-fit: contain;
+            filter: hue-rotate(180deg) brightness(1.3) contrast(1.6);
             transition: all 0.5s;
         }
 
-        /* サブモニター（右：レーダー＆データ） */
+        /* サブモニター（右：レーダー・通信・段数） */
         #sub-monitor-right {
             grid-column: 3 / 4; grid-row: 2 / 3;
-            margin-right: 10px;
-            clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
-            padding: 15px;
-            display: flex; flex-direction: column; justify-content: center;
+            margin-right: 15px;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 75% 100%, 0 100%);
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
         }
 
-        /* コンソールパネル（下部：ボタン群） */
+        /* コンソールパネル（下部：ボタン・エネルギー） */
         #console-panel {
             grid-column: 1 / 4; grid-row: 3 / 4;
-            display: flex; justify-content: space-around; align-items: center;
-            background: linear-gradient(0deg, rgba(0,243,255,0.1) 0%, transparent 100%);
+            display: grid; grid-template-columns: 25vw 50vw 25vw;
+            background: linear-gradient(0deg, rgba(0,243,255,0.08) 0%, transparent 100%);
             border-top: 2px solid var(--ui-cyan);
-            padding: 10px 50px;
+            padding: 10px 40px;
         }
 
         /* アニメーションボタン */
         .cockpit-btn {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             border: 2px solid var(--ui-cyan);
             color: var(--ui-cyan);
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem; font-weight: bold;
-            padding: 15px 30px;
+            font-size: 1.3rem; font-weight: bold;
+            padding: 20px 40px;
             cursor: pointer;
             text-transform: uppercase;
             position: relative;
             overflow: hidden;
             transition: all 0.2s;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
         }
 
         .cockpit-btn:hover, .cockpit-btn.active {
             background: var(--ui-cyan);
             color: #000;
-            box-shadow: 0 0 20px var(--ui-cyan);
-            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--ui-cyan-glow);
+            transform: scale(1.03);
         }
 
         .cockpit-btn.danger { border-color: var(--ui-red); color: var(--ui-red); }
         .cockpit-btn.danger:hover, .cockpit-btn.danger.active {
-            background: var(--ui-red); color: #fff; box-shadow: 0 0 20px var(--ui-red);
+            background: var(--ui-red); color: #fff; box-shadow: 0 0 25px var(--ui-red-glow);
+        }
+
+        .cockpit-btn.warning { border-color: var(--ui-orange); color: var(--ui-orange); }
+        .cockpit-btn.warning:hover, .cockpit-btn.warning.active {
+            background: var(--ui-orange); color: #fff; box-shadow: 0 0 25px var(--ui-orange-glow);
         }
 
         /* データスクロールアニメーション */
         .data-stream {
-            font-size: 0.8rem; line-height: 1.2; height: 100px; overflow: hidden;
+            font-size: 0.9rem; line-height: 1.3; height: 120px; overflow: hidden;
+            border: 1px solid var(--ui-cyan-dim); padding: 10px;
         }
         .data-stream span {
-            display: block; animation: scrollData 2s linear infinite;
+            display: block; animation: scrollData 2.5s linear infinite;
         }
         @keyframes scrollData {
             0% { transform: translateY(0); }
-            100% { transform: translateY(-20px); }
+            100% { transform: translateY(-26px); }
         }
+
+        /* エネルギーゲージ */
+        .gauge-container {
+            display: flex; flex-direction: column; gap: 8px;
+            padding: 10px; border: 1px solid var(--ui-cyan-dim);
+        }
+        .gauge-bar {
+            width: 100%; height: 20px;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--ui-cyan);
+            position: relative;
+        }
+        .gauge-fill {
+            height: 100%; background: var(--ui-cyan);
+            transition: width 0.3s, background-color 0.3s;
+        }
+        .gauge-text { position: absolute; top: 0; left: 10px; font-size: 1rem; color: #fff; text-shadow: 1px 1px #000;}
+
+        /* レーダーアニメーション */
+        #radar {
+            width: 150px; height: 150px;
+            border: 2px solid var(--ui-cyan); border-radius: 50%;
+            position: relative; margin-left: auto; margin-right: auto;
+            overflow: hidden;
+        }
+        #radar-sweep {
+            position: absolute; top:50%; left:50%;
+            width:100%; height:2px;
+            background:var(--ui-cyan); transform-origin: left;
+            animation: rotateTarget 3s linear infinite;
+        }
+        .radar-dot {
+            position: absolute; width: 6px; height: 6px;
+            border-radius: 50%;
+            animation: fadeInOut 2s infinite;
+        }
+        .radar-dot.enemy { background: var(--ui-red); }
+        .radar-dot.ally { background: var(--ui-cyan); }
+        
+        @keyframes fadeInOut { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 
     </style>
 </head>
 <body>
 
     <div id="portrait-warning">
-        <h2 style="font-family: 'Orbitron', sans-serif; color: var(--ui-red); font-size: 2rem; margin-bottom: 20px;">SYSTEM ALERT</h2>
+        <h2 style="font-family: 'Orbitron', sans-serif; color: var(--ui-red); font-size: 2.5rem; margin-bottom: 25px;">SYSTEM ALERT</h2>
         <p>PLEASE ROTATE YOUR DEVICE TO LANDSCAPE MODE.<br>コックピットモニターは横画面専用です。</p>
     </div>
 
     <div id="cockpit-wrapper">
         
         <div id="hud-top">
-            <div style="font-size: 1.5rem; font-family: 'Orbitron'; font-weight: 900;">SYS_G-CON <span style="font-size: 0.8rem; color:#fff;">v1.0.5</span></div>
+            <div style="font-size: 1.8rem; font-family: 'Orbitron'; font-weight: 900; color: var(--ui-cyan);">SYS_G-CON <span style="font-size: 1rem; color:#fff;">v2.1.0</span></div>
+            <div style="font-size: 2.5rem; font-family: 'Orbitron'; font-weight: 900; color: #fff;">GX-9900</div>
             <div style="text-align: right; color: var(--ui-orange);">
                 ALERT STATUS: <span id="alert-status">NORMAL</span><br>
-                <span style="font-size: 0.8rem;">COORDINATES: X:482.1 Y:901.4 Z:-12.8</span>
+                <span style="font-size: 0.9rem;">COORDINATES: X: <span id="coord-x">482.1</span> Y: <span id="coord-y">901.4</span> Z: <span id="coord-z">-12.8</span></span>
             </div>
         </div>
 
         <div id="sub-monitor-left" class="panel">
-            <div style="position: absolute; top:10px; left:10px; background: rgba(0,0,0,0.8); padding: 5px;">TACTICAL MAP</div>
-            <img id="sub-img-left" src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100" alt="Tactical Data">
+            <h3 style="border-bottom: 1px solid var(--ui-cyan); margin-bottom: 10px;">TACTICAL DATA</h3>
+            <img id="sub-img-left" src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100" alt="Tactical map">
+            <div class="data-stream">
+                <span>> SPEED: <span id="speed">12500</span> km/h</span>
+                <span>> ALTITUDE: <span id="altitude">3500</span> m</span>
+                <span>> FUEL: <span id="fuel">98</span>%</span>
+                <span>> REACT TEMP: <span id="react-temp">450</span>°C</span>
+            </div>
         </div>
 
         <div id="main-monitor" class="panel">
@@ -208,41 +274,70 @@
                 <source src="https://assets.mixkit.co/videos/preview/mixkit-galaxy-with-stars-in-the-universe-3171-large.mp4" type="video/mp4">
             </video>
             <div class="target-reticle" id="reticle"></div>
-            <div style="position: absolute; bottom: 20px; left: 20px; font-size: 1.5rem; font-family: 'Orbitron'; text-shadow: 2px 2px #000;">
+            <div style="position: absolute; top: 20px; left: 20px; padding: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--ui-cyan-dim);">MAIN MONITOR</div>
+            <div style="position: absolute; bottom: 20px; left: 20px; font-size: 2rem; font-family: 'Orbitron'; text-shadow: 3px 3px #000;">
                 MODE: <span id="mode-display" style="color:#fff;">CRUISE</span>
             </div>
+            <div style="position: absolute; top: 20px; right: 20px; padding: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--ui-cyan-dim);">TARGET DIST: <span id="target-dist">12000</span>m</div>
         </div>
 
         <div id="sub-monitor-right" class="panel">
-            <h3 style="border-bottom: 1px solid var(--ui-cyan); margin-bottom: 10px;">SYSTEM LOG</h3>
-            <div class="data-stream" id="system-log">
-                <span>> BOOTING G-CON OS...</span>
-                <span>> ALL SYSTEMS GREEN.</span>
-                <span>> MICROWAVE RECEIVER STABLE.</span>
-                <span>> SCANNING AREA...</span>
+            <h3 style="border-bottom: 1px solid var(--ui-cyan); margin-bottom: 10px;">WEAPON & RADAR</h3>
+            <div style="font-size: 1rem;">ACTIVE WEAPON: <span id="active-weapon" style="color:#fff;">BEAM SWORD</span></div>
+            <div style="font-size: 1.3rem;">AMMO: <span id="ammo-count">N/A</span> / <span id="ammo-total">N/A</span></div>
+            <div id="radar">
+                <div id="radar-sweep"></div>
+                <div class="radar-dot enemy" style="top:30px; left:50px;"></div>
+                <div class="radar-dot ally" style="top:100px; left:110px;"></div>
             </div>
-            <div style="margin-top: 20px; width: 100px; height: 100px; border: 2px solid var(--ui-cyan); border-radius: 50%; position: relative; margin-left: auto; margin-right: auto;">
-                <div style="position: absolute; top:50%; left:50%; width:50%; height:2px; background:var(--ui-cyan); transform-origin: left; animation: rotateTarget 2s linear infinite;"></div>
+            <div class="data-stream" id="system-log">
+                <span>> SYSTEM: COMM OK.</span>
+                <span>> SIGNAL: STRONG.</span>
+                <span>> CHANNELS: 16 ACTIVE.</span>
+                <span>> SCANNING...</span>
             </div>
         </div>
 
         <div id="console-panel">
-            <button class="cockpit-btn active" onclick="switchMode('cruise', this)">CRUISE MODE</button>
-            <button class="cockpit-btn" onclick="switchMode('combat', this)">COMBAT MODE</button>
-            <button class="cockpit-btn danger" onclick="switchMode('satellite', this)">SATELLITE CANNON</button>
+            <div class="gauge-container">
+                <div>MAIN REACTOR</div>
+                <div class="gauge-bar"><div id="reactor-gauge" class="gauge-fill" style="width:95%;"></div><span class="gauge-text"><span id="reactor-value">95</span>%</span></div>
+                <div>SATELLITE CHARGER</div>
+                <div class="gauge-bar"><div id="satellite-gauge" class="gauge-fill" style="width:0%;"></div><span class="gauge-text"><span id="satellite-value">0</span>%</span></div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <button class="cockpit-btn active" onclick="switchMode('cruise', this)">CRUISE MODE</button>
+                <button class="cockpit-btn warning" onclick="switchMode('combat', this)">COMBAT MODE</button>
+                <button class="cockpit-btn danger" onclick="switchMode('satellite', this)">SATELLITE CANNON</button>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <button class="cockpit-btn" onclick="selectWeapon('s-buster', this)">S-BUSTER RIFLE</button>
+                <button class="cockpit-btn active" onclick="selectWeapon('b-sword', this)">BEAM SWORD</button>
+                <button class="cockpit-btn" onclick="openMenu('menu', this)">SYSTEM MENU</button>
+            </div>
         </div>
         
     </div>
 
     <script>
-        // ボタン操作による各モニターの動的切り替え制御
+        // データシミュレーション用の初期値
+        let satelliteCharging = false;
+        let reactorValue = 95;
+        let satelliteValue = 0;
+        let targetDistValue = 12000;
+        let ammoCounts = { 's-buster': { count: 35, total: 35 }, 'b-sword': { count: 'N/A', total: 'N/A' }, 'satellite': { count: 'CHARGING', total: '100%' }};
+        let activeWeapon = 'b-sword';
+        let xCoord = 482.1;
+        let yCoord = 901.4;
+        let zCoord = -12.8;
+
+        // モードチェンジ機能
         function switchMode(mode, btnElement) {
-            // ボタンのアクティブ状態リセット
-            const buttons = document.querySelectorAll('.cockpit-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
+            // モードボタンのアクティブ状態リセット
+            const modeButtons = document.querySelectorAll('.cockpit-btn[onclick^="switchMode"]');
+            modeButtons.forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
 
-            // DOM要素の取得
             const video = document.getElementById('main-video');
             const subImg = document.getElementById('sub-img-left');
             const modeDisplay = document.getElementById('mode-display');
@@ -255,44 +350,148 @@
 
             setTimeout(() => {
                 if (mode === 'cruise') {
-                    // 通常巡航モード
                     video.src = "https://assets.mixkit.co/videos/preview/mixkit-galaxy-with-stars-in-the-universe-3171-large.mp4";
                     subImg.src = "https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=3840&q=100";
-                    subImg.style.filter = "hue-rotate(180deg) brightness(1.2) contrast(1.5)";
+                    subImg.style.filter = "hue-rotate(180deg) brightness(1.3) contrast(1.6)";
                     modeDisplay.innerText = "CRUISE";
                     modeDisplay.style.color = "#fff";
                     alertStatus.innerText = "NORMAL";
                     alertStatus.style.color = "var(--ui-orange)";
-                    reticle.style.borderColor = "rgba(0, 243, 255, 0.5)";
+                    reticle.style.borderColor = "rgba(0, 243, 255, 0.4)";
+                    satelliteCharging = false;
                     
                 } else if (mode === 'combat') {
-                    // 戦闘モード（高速移動/戦闘的な動画・画像へ切り替え）
                     video.src = "https://assets.mixkit.co/videos/preview/mixkit-entering-a-hyperspace-jump-in-outer-space-3162-large.mp4";
                     subImg.src = "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=3840&q=100";
-                    subImg.style.filter = "hue-rotate(0deg) brightness(1.5) contrast(1.8)";
+                    subImg.style.filter = "hue-rotate(0deg) brightness(1.6) contrast(1.9)";
                     modeDisplay.innerText = "COMBAT";
                     modeDisplay.style.color = "var(--ui-orange)";
                     alertStatus.innerText = "ENGAGED";
                     alertStatus.style.color = "var(--ui-orange)";
-                    reticle.style.borderColor = "var(--ui-orange)";
+                    reticle.style.borderColor = "var(--ui-orange-glow)";
+                    satelliteCharging = false;
 
                 } else if (mode === 'satellite') {
-                    // サテライトキャノン発射モード（赤警告・エネルギー充填動画へ切り替え）
                     video.src = "https://assets.mixkit.co/videos/preview/mixkit-fire-flames-burning-in-slow-motion-4034-large.mp4";
                     subImg.src = "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=3840&q=100";
-                    subImg.style.filter = "sepia(1) hue-rotate(-50deg) saturate(3) brightness(1.2)";
+                    subImg.style.filter = "sepia(1) hue-rotate(-50deg) saturate(3) brightness(1.3)";
                     modeDisplay.innerText = "SATELLITE SYSTEM";
                     modeDisplay.style.color = "var(--ui-red)";
                     alertStatus.innerText = "DANGER / CHARGING";
                     alertStatus.style.color = "var(--ui-red)";
-                    reticle.style.borderColor = "var(--ui-red)";
+                    reticle.style.borderColor = "var(--ui-red-glow)";
+                    satelliteCharging = true;
+                    satelliteValue = 0;
+                    updateSatelliteGauge();
                 }
 
                 // フェードイン
                 video.style.opacity = 1;
                 subImg.style.opacity = 1;
-            }, 500); // フェードアウトの時間に合わせて切り替え
+            }, 500);
         }
+
+        // 武装選択機能
+        function selectWeapon(weapon, btnElement) {
+            // 武装ボタンのアクティブ状態リセット
+            const weaponButtons = document.querySelectorAll('.cockpit-btn[onclick^="selectWeapon"]');
+            weaponButtons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            activeWeapon = weapon;
+            const activeWeaponDisplay = document.getElementById('active-weapon');
+            const ammoCountDisplay = document.getElementById('ammo-count');
+            const ammoTotalDisplay = document.getElementById('ammo-total');
+
+            if (weapon === 's-buster') {
+                activeWeaponDisplay.innerText = "S-BUSTER RIFLE";
+                ammoCountDisplay.innerText = ammoCounts[weapon].count;
+                ammoTotalDisplay.innerText = ammoCounts[weapon].total;
+            } else if (weapon === 'b-sword') {
+                activeWeaponDisplay.innerText = "BEAM SWORD";
+                ammoCountDisplay.innerText = ammoCounts[weapon].count;
+                ammoTotalDisplay.innerText = ammoCounts[weapon].total;
+            }
+        }
+
+        // メニュー展開機能 (ダミー)
+        function openMenu(menu, btnElement) {
+            btnElement.classList.toggle('active');
+            alert("SYSTEM MENU: Function is currently disabled. Access G-CON maintenance protocol.");
+        }
+
+        // エネルギーゲージ更新機能 (サテライト)
+        function updateSatelliteGauge() {
+            if (satelliteCharging) {
+                const satelliteGauge = document.getElementById('satellite-gauge');
+                const satelliteValueDisplay = document.getElementById('satellite-value');
+                const ammoCountDisplay = document.getElementById('ammo-count');
+                const ammoTotalDisplay = document.getElementById('ammo-total');
+                const alertStatus = document.getElementById('alert-status');
+
+                if (satelliteValue < 100) {
+                    satelliteValue += 2;
+                    satelliteGauge.style.width = satelliteValue + '%';
+                    satelliteValueDisplay.innerText = satelliteValue;
+                } else {
+                    satelliteValue = 100;
+                    satelliteGauge.style.width = '100%';
+                    satelliteValueDisplay.innerText = '100';
+                    satelliteGauge.style.backgroundColor = 'var(--ui-cyan)';
+                    satelliteValueDisplay.style.color = 'var(--ui-cyan)';
+                    if (activeWeapon === 'satellite') {
+                        ammoCountDisplay.innerText = ammoCounts['satellite'].count;
+                        ammoTotalDisplay.innerText = ammoCounts['satellite'].total;
+                    }
+                    alertStatus.innerText = "READY TO FIRE";
+                    alertStatus.style.color = "var(--ui-cyan)";
+                }
+            } else {
+                const satelliteGauge = document.getElementById('satellite-gauge');
+                const satelliteValueDisplay = document.getElementById('satellite-value');
+                satelliteValue = 0;
+                satelliteGauge.style.width = '0%';
+                satelliteValueDisplay.innerText = '0';
+                satelliteGauge.style.backgroundColor = 'var(--ui-cyan)';
+                satelliteValueDisplay.style.color = 'var(--ui-cyan)';
+            }
+        }
+
+        // データ更新のシミュレーション
+        function updateData() {
+            // レーダー掃引アニメーションに合わせて敵ドットの不透明度を変化させる
+            const radarSweep = document.getElementById('radar-sweep');
+            const enemyDot = document.querySelector('.radar-dot.enemy');
+            const allyDot = document.querySelector('.radar-dot.ally');
+            const time = Date.now();
+            enemyDot.style.opacity = Math.sin(time / 1000) * 0.5 + 0.5;
+            allyDot.style.opacity = Math.cos(time / 1000) * 0.5 + 0.5;
+
+            // 各種データの微小な変動
+            document.getElementById('coord-x').innerText = (xCoord + (Math.random() - 0.5) * 0.5).toFixed(1);
+            document.getElementById('coord-y').innerText = (yCoord + (Math.random() - 0.5) * 0.5).toFixed(1);
+            document.getElementById('coord-z').innerText = (zCoord + (Math.random() - 0.5) * 0.1).toFixed(1);
+            document.getElementById('speed').innerText = Math.floor(12500 + (Math.random() - 0.5) * 50);
+            document.getElementById('altitude').innerText = Math.floor(3500 + (Math.random() - 0.5) * 10);
+            document.getElementById('react-temp').innerText = Math.floor(450 + (Math.random() - 0.5) * 5);
+            document.getElementById('target-dist').innerText = Math.floor(targetDistValue + (Math.random() - 0.5) * 100);
+
+            // エネルギーゲージの微小な変動
+            const reactorGauge = document.getElementById('reactor-gauge');
+            const reactorValueDisplay = document.getElementById('reactor-value');
+            reactorValue += (Math.random() - 0.5) * 0.2;
+            reactorValue = Math.min(100, Math.max(0, reactorValue));
+            reactorGauge.style.width = reactorValue + '%';
+            reactorValueDisplay.innerText = Math.floor(reactorValue);
+
+            requestAnimationFrame(updateData);
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateData();
+            setInterval(updateSatelliteGauge, 200); // サテライト充電の更新間隔
+        });
     </script>
 </body>
 </html>
