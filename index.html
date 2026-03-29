@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>機動新世紀ガンダムX - AFTER WAR GUNDAM X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00e5ff; /* サテライトキャノンのようなシアン */
+            --bg-color: #050505;
+            --text-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* スクロールバーの装飾 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        /* ヒーローセクション（フルスクリーンビデオ背景） */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(5,5,5,1) 100%);
+            z-index: 1;
+        }
+
+        /* ダミー動画：宇宙と月のイメージ */
+        .hero video {
+            position: absolute;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            z-index: 0;
+            opacity: 0.8;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-family: 'Cinzel', serif;
+            font-size: 5vw;
+            letter-spacing: 0.2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.5s ease forwards 0.5s;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            letter-spacing: 0.5em;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeUp 1.5s ease forwards 1s;
+        }
+
+        /* コンテンツセクション */
+        .section {
+            padding: 100px 10vw;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            margin-bottom: 50px;
+            text-align: center;
+            color: var(--primary-color);
+            letter-spacing: 0.1em;
+        }
+
+        /* グラスモーフィズムを用いたカードデザイン */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 229, 255, 0.2);
+            border: 1px solid rgba(0, 229, 255, 0.5);
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .glass-card:hover .card-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 30px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* スクロールアニメーション用クラス */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <video autoplay muted loop playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-moon-in-a-dark-night-sky-4185-large.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <h1 class="hero-title">AFTER WAR GUNDAM X</h1>
+            <p class="hero-subtitle">月は出ているか？</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="reveal">
+            <h2 class="section-title">STORY</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto; font-size: 1.1rem; color: #ddd;">
+                第7次宇宙戦争から15年。地球は荒廃し、人々は過酷な環境の中で生き抜いていた。<br>
+                ジャンク屋の少年ガロード・ランは、謎の少女ティファ・アディールと出会い、<br>
+                幻のモビルスーツ「ガンダムX」を起動させる。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title reveal">MOBILE SUITS</h2>
+        <div class="grid-container">
+            <div class="glass-card reveal">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=800&q=80" alt="GX-9900 ガンダムX">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">GX-9900 GUNDAM X</h3>
+                    <p class="card-desc">旧連邦軍が開発した決戦用ガンダムタイプMS。背部にマイクロウェーブを受信し放つ戦略兵器「サテライトキャノン」を装備する。</p>
+                </div>
+            </div>
+
+            <div class="glass-card reveal">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=800&q=80" alt="GW-9800 ガンダムエアマスター">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">GW-9800 GUNDAM AIRMASTER</h3>
+                    <p class="card-desc">高機動戦闘に特化した可変MS。ファイターモードへの変形機構を持ち、大気圏内での圧倒的な空中戦能力を誇る。</p>
+                </div>
+            </div>
+
+            <div class="glass-card reveal">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80" alt="GT-9600 ガンダムレオパルド">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">GT-9600 GUNDAM LEOPARD</h3>
+                    <p class="card-desc">全身に多数の火器を内蔵した重武装MS。インナーアームガトリングをはじめとする実弾兵器で面制圧を行う。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>※本サイトはデモンストレーション用の非公式ダミーサイトです。</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+
+            const revealOnScroll = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // 一度発火したら監視を解除
+                    }
+                });
+            }, {
+                root: null,
+                threshold: 0.15, // 要素が15%見えたら発火
+                rootMargin: "0px 0px -50px 0px"
+            });
+
+            reveals.forEach(reveal => {
+                revealOnScroll.observe(reveal);
+            });
+        });
+    </script>
+</body>
+</html>
