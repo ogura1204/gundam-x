@@ -3,437 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>機動戦士ガンダム 閃光のハサウェイ | Special Site</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-
+    <title>VULTURE NETWORK // A.W.0015 DATABASE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* =========================================
-           Reset & Base Styles
-           ========================================= */
         :root {
-            --primary: #0F172A;     /* ディープネイビー（宇宙・夜間のイメージ） */
-            --secondary: #F1F5F9;   /* オフホワイト */
-            --accent: #F59E0B;      /* 閃光のオレンジ・アンバー */
-            --text-main: #334155;
-            --text-muted: #64748B;
-            --bg-white: #FFFFFF;
-            --border-color: #E2E8F0;
+            --gx-cyan: #00ffcc;
+            --gx-cyan-dim: rgba(0, 255, 204, 0.2);
+            --bg-dark: #03080a;
+            --panel-bg: rgba(10, 20, 25, 0.6);
+            --text-main: #e0f7fa;
         }
 
-        /* 横揺れ防止と左固定を両立する鉄壁の指定 */
-        html, body { 
-            width: 100%; 
-            max-width: 100%; 
-            margin: 0; 
-            padding: 0; 
-            overflow-x: clip; 
-            -webkit-text-size-adjust: 100%; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background-color: var(--secondary);
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: 'Noto Sans JP', "Helvetica Neue", Arial, sans-serif;
             line-height: 1.8;
-            font-size: 16px;
-            -webkit-font-smoothing: antialiased;
-            scroll-behavior: smooth;
-            overflow-wrap: break-word;
-            word-break: normal;
+            overflow-x: hidden;
+            /* CRTスキャンライン風エフェクト */
+            background-image: linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 100% 4px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        a { text-decoration: none; color: inherit; transition: opacity 0.2s; }
-        a:hover { opacity: 0.7; }
-        ul { list-style: none; }
-        .text-red { color: var(--accent); }
-        .marker-yellow { background: linear-gradient(transparent 60%, #fef08a 60%); font-weight: 700; display: inline; }
+        h1, h2, h3, .mono {
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+        }
 
-        img { max-width: 100%; height: auto; display: block; object-fit: contain; }
+        /* 共通アニメーション */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-        /* =========================================
-           Layout (PC 2カラム)
-           ========================================= */
-        .wrapper {
+        /* ヘッダー・ナビゲーション */
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 40px;
+            background: rgba(3, 8, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gx-cyan-dim);
+            z-index: 100;
             display: flex;
-            align-items: flex-start; /* ★左メニューを固定（sticky）するために必須 */
-            min-height: 100vh;
-            max-width: 1440px;
-            margin: 0 auto;
-            position: relative; 
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* -----------------------------------------
-           左側：サイドバー（スクロールしても画面内に固定）
-           ----------------------------------------- */
-        .sidebar {
-            width: 320px;
+        .sys-title {
+            color: var(--gx-cyan);
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 10px var(--gx-cyan);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            transition: color 0.3s;
+        }
+
+        nav a:hover { color: var(--gx-cyan); }
+
+        /* ヒーローセクション */
+        .hero {
             height: 100vh;
-            position: -webkit-sticky;
-            position: sticky; /* ★スクロール追従固定 */
-            top: 0;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 60px 40px;
-            background-color: var(--secondary);
-            flex-shrink: 0;
-            overflow-y: auto;
-            scrollbar-width: none;
-        }
-        .sidebar::-webkit-scrollbar { display: none; }
-
-        .sidebar-top { text-align: center; }
-        .sidebar-logo { font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; color: var(--primary); letter-spacing: 0.05em; margin-bottom: 20px; line-height: 1.2; }
-        .sidebar-ill { width: 100%; height: auto; margin: 0 auto 30px; font-weight: 900; color: var(--accent); font-size: 1.1rem; letter-spacing: 0.2em;}
-        .sidebar-catch { font-size: 1.05rem; font-weight: 900; line-height: 1.6; margin-bottom: 40px; color: var(--text-main); }
-
-        .btn-dl-sidebar {
-            display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #F59E0B, #EA580C);
-            color: #ffffff; padding: 20px 0; border-radius: 50px;
-            font-weight: 900; font-size: 1.05rem;
-            box-shadow: 0 10px 25px rgba(234, 88, 12, 0.3); transition: transform 0.2s;
-        }
-        .btn-dl-sidebar:hover { transform: translateY(-3px); }
-
-        .sidebar-bottom { text-align: center; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
-        .copyright { font-size: 0.75rem; color: #999; margin-top: 30px; font-weight: 400; }
-
-        /* -----------------------------------------
-           右側：メインコンテンツ
-           ----------------------------------------- */
-        .main-content {
-            flex: 1;
-            background-color: var(--bg-white);
-            border-radius: 50px 0 0 50px;
-            padding: 100px 8%;
-            min-width: 0;
-            box-shadow: -15px 0 40px rgba(0,0,0,0.03);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             position: relative;
+            padding-top: 60px;
         }
 
-        section { margin-bottom: 140px; }
-        .sec-header { text-align: center; margin-bottom: 70px; }
-        .sec-en { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 900; color: #cbd5e1; letter-spacing: 0.2em; display: block; margin-bottom: 10px; }
-        .sec-ja { font-size: clamp(2rem, 4vw, 2.6rem); font-weight: 900; color: var(--primary); margin: 0; letter-spacing: 0.05em; line-height: 1.3; }
-
-        /* =========================================
-           Hero セクション
-           ========================================= */
-        .hero { text-align: center; padding-top: 20px; }
-        .hero-title { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 900; line-height: 1.4; margin-bottom: 40px; color: var(--primary); letter-spacing: 0.05em; word-break: break-all; }
-        
-        .dl-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 50px; }
-        .badge { background: var(--secondary); color: var(--text-main); border: 2px solid var(--border-color); padding: 12px 28px; border-radius: 50px; font-weight: 900; font-size: 1rem; letter-spacing: 0.1em; }
-        
-        .hero-video-wrapper {
-            width: 100%; max-width: 800px; margin: 0 auto 50px;
-            border-radius: 30px; overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            background-color: #000;
-            aspect-ratio: 16 / 9;
-        }
-        .hero-video-wrapper iframe {
-            width: 100%; height: 100%; display: block; border: none;
-        }
-        
-        .hero-text { font-size: clamp(1.1rem, 2.5vw, 1.3rem); font-weight: 700; line-height: 2; margin-bottom: 40px; }
-
-        /* =========================================
-           Feature (登場人物・機体) セクション
-           ========================================= */
-        .feature-row { display: flex; align-items: center; gap: 50px; margin-bottom: 80px; }
-        .feature-row:nth-child(even) { flex-direction: row-reverse; }
-        
-        .feature-text { flex: 1; }
-        .feature-label { font-size: 0.9rem; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 15px; display: block; font-family: 'Montserrat', sans-serif; }
-        .feature-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 20px; line-height: 1.4; color: var(--primary); }
-        .feature-desc { color: var(--text-main); line-height: 1.8; font-size: 1rem; font-weight: 700; }
-        
-        .feature-img { flex: 1; height: 320px; background-color: var(--secondary); border-radius: 30px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .feature-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .feature-row:hover .feature-img img { transform: scale(1.05); }
-
-        /* =========================================
-           組織 (Organization) セクション
-           ========================================= */
-        .reason-box {
-            background-color: var(--secondary); border-radius: 30px; padding: 60px 50px;
-            text-align: left; margin-bottom: 40px; border: 1px solid var(--border-color);
-        }
-        .honest-box {
-            background-color: #F8FAFC; border-radius: 30px; padding: 60px 50px;
-            border: 2px solid var(--accent); text-align: left; position: relative;
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            /* 荒廃した地球と宇宙のダミー背景 */
+            background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=80') center/cover;
+            opacity: 0.3;
+            z-index: -1;
         }
 
-        /* =========================================
-           動画グリッド (MOVIE) セクション
-           ========================================= */
-        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .video-item { border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); aspect-ratio: 16 / 9; background: #000; }
-        .video-item iframe { width: 100%; height: 100%; border: none; }
+        .hero-title {
+            font-size: 4rem;
+            color: var(--gx-cyan);
+            letter-spacing: 0.3em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
 
-        /* =========================================
-           SP用 ヘッダー＆フッター＆追従ボタン（PC非表示）
-           ========================================= */
-        .sp-header, .sp-footer, .sp-floating-cta { display: none; }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 0.5em;
+            color: #aaa;
+        }
 
-        .js-fade { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .js-fade.is-active { opacity: 1; transform: translateY(0); }
+        /* コンテンツセクション共通 */
+        .section {
+            padding: 100px 10vw;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
 
-        /* =========================================
-           Responsive (SP - 1カラム)
-           ========================================= */
-        @media (max-width: 900px) {
-            html, body { overflow-x: hidden; }
-            
-            .wrapper { flex-direction: column; padding: 0; max-width: 100%; overflow-x: hidden; }
-            .sidebar { display: none; }
-            
-            .sp-header {
-                display: block; text-align: center; padding: 20px 15px;
-                background-color: var(--secondary); border-bottom: 1px solid var(--border-color);
-            }
-            .sp-header .sp-logo { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--primary); margin: 0; letter-spacing: 0.05em; line-height: 1.2; }
-            .sp-header .sp-sub { font-size: 0.75rem; font-weight: 700; color: var(--accent); margin-top: 5px; display: block; line-height: 1.4; letter-spacing: 0.1em; }
+        .section-header {
+            margin-bottom: 60px;
+            border-left: 4px solid var(--gx-cyan);
+            padding-left: 20px;
+        }
 
-            .main-content {
-                border-radius: 0;
-                padding: 20px 15px 120px; 
-                box-shadow: none;
-                background-color: var(--secondary);
-                max-width: 100%; 
-                overflow-x: hidden; 
-            }
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--gx-cyan);
+            letter-spacing: 0.1em;
+        }
 
-            section { margin-bottom: 80px; }
-            .sec-ja { font-size: clamp(1.4rem, 5vw, 1.8rem); line-height: 1.4; }
-            .sec-header { margin-bottom: 40px; }
-            
-            .hero-title { font-size: clamp(1.6rem, 6vw, 2.1rem); margin-bottom: 25px; letter-spacing: 0.05em; line-height: 1.4; word-break: break-all; }
-            .dl-badges { gap: 10px; margin-bottom: 30px; }
-            .badge { padding: 10px 15px; font-size: 0.8rem; }
-            
-            /* 動画枠のはみ出し防止 */
-            .hero-video-wrapper { width: 90%; max-width: 400px; margin: 0 auto 30px; border-radius: 20px; box-sizing: border-box; }
-            
-            /* Feature (登場人物・機体) のSP調整 */
-            .feature-row, .feature-row:nth-child(even) { flex-direction: column; gap: 20px; text-align: left; }
-            .feature-img { width: 100%; height: 220px; border-radius: 20px; }
-            .feature-title { font-size: 1.5rem; margin-bottom: 10px; }
-            
-            .reason-box, .honest-box { padding: 30px 20px; border-radius: 20px; }
-            .reason-box p, .honest-box p { font-size: 0.95rem; }
+        .section-subtitle {
+            font-size: 1rem;
+            color: #888;
+        }
 
-            .video-grid { grid-template-columns: 1fr; gap: 20px; }
+        /* グリッドレイアウト（組織・人物・機体用） */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
 
-            /* -------------------------------------
-               SP用 フッター
-               ------------------------------------- */
-            .sp-footer { display: block; text-align: center; padding: 50px 15px; margin-top: 20px; border-top: 1px solid var(--border-color); }
-            .sp-footer a { color: var(--primary); font-weight: 900; font-size: 1rem; text-decoration: none; font-family: 'Montserrat', sans-serif;}
-            .sp-footer p { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; }
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--gx-cyan-dim);
+            padding: 30px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-            /* -------------------------------------
-               SP用 追従CTAボタン
-               ------------------------------------- */
-            .sp-floating-cta {
-                display: block; position: fixed; bottom: 0; left: 0; width: 100%;
-                background: linear-gradient(to top, rgba(241,245,249,1) 50%, rgba(241,245,249,0));
-                padding: 15px 15px 25px; z-index: 100;
-                transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
-            }
-            
-            .btn-dl-sp {
-                display: block; background: linear-gradient(135deg, #F59E0B, #EA580C); color: #ffffff; text-align: center;
-                padding: 16px 0; border-radius: 50px; font-weight: 900; font-size: 1.05rem;
-                box-shadow: 0 10px 20px rgba(234, 88, 12, 0.35); letter-spacing: 0.05em;
-            }
+        .glass-panel:hover {
+            border-color: var(--gx-cyan);
+            box-shadow: 0 0 20px var(--gx-cyan-dim);
+            transform: translateY(-5px);
+        }
+
+        .glass-panel img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--gx-cyan-dim);
+            margin-bottom: 20px;
+            filter: grayscale(80%) contrast(1.2);
+            transition: filter 0.5s;
+        }
+
+        .glass-panel:hover img {
+            filter: grayscale(0%) contrast(1);
+        }
+
+        .data-label {
+            font-size: 0.8rem;
+            color: var(--gx-cyan);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .ext-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--gx-cyan);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid var(--gx-cyan);
+            padding: 5px 15px;
+            transition: all 0.3s;
+        }
+        .ext-link:hover {
+            background: var(--gx-cyan);
+            color: var(--bg-dark);
+        }
+
+        /* 年表スタイル */
+        .timeline-item {
+            display: flex;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.02);
+            padding: 20px;
+            border-left: 2px solid #555;
+        }
+        .timeline-year {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--gx-cyan);
+            width: 120px;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        /* ビデオコンテナ */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border: 1px solid var(--gx-cyan);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.1);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--gx-cyan-dim);
+            font-family: 'Share Tech Mono', monospace;
+            color: #666;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="sp-header js-fade is-active">
-        <h1 class="sp-logo">HATHAWAY'S FLASH</h1>
-        <p class="sp-sub">機動戦士ガンダム 閃光のハサウェイ</p>
-    </div>
+    <header>
+        <div class="sys-title">G-CON // A.W.0015 TERMINAL</div>
+        <nav>
+            <ul>
+                <li><a href="#world">WORLD</a></li>
+                <li><a href="#timeline">TIMELINE</a></li>
+                <li><a href="#factions">FACTIONS</a></li>
+                <li><a href="#personnel">PERSONNEL</a></li>
+                <li><a href="#mobile-suits">MOBILE SUITS</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div class="wrapper">
-        <aside class="sidebar">
-            <div class="sidebar-top">
-                <div class="sidebar-logo">HATHAWAY'S<br>FLASH</div>
-                
-                <div class="sidebar-ill">
-                    THE SOUND OF<br>U.C. 0105
-                </div>
-                
-                <p class="sidebar-catch">機動戦士ガンダム<br>閃光のハサウェイ</p>
-                <a href="https://gundam-official.com/hathaway/" target="_blank" class="btn-dl-sidebar">公式サイトへ</a>
+    <section class="hero">
+        <h1 class="hero-title">AFTER WAR 0015</h1>
+        <p class="hero-subtitle">DATA ARCHIVE & TACTICAL NETWORK</p>
+        <p class="mono" style="margin-top: 40px; color: var(--gx-cyan);">STATUS: CONNECTED / USER: VULTURE</p>
+    </section>
+
+    <section id="world" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">01. WORLD SITUATION</h2>
+            <p class="section-subtitle">CURRENT STATE OF THE EARTH SPHERE</p>
+        </div>
+        <div class="glass-panel reveal" style="max-width: 900px; margin: 0 auto;">
+            <p>第七次宇宙戦争から15年。宇宙革命軍によって引き起こされた「コロニー落とし」は地球環境を徹底的に破壊し、100億を誇った総人口はわずか1億人弱へと激減した。<br><br>
+            深刻な核の冬を乗り越え、気候はようやく安定期に入りつつあるが、法と秩序は失われている。旧連邦軍の残骸やモビルスーツを発掘し、転売や武装に利用する「バルチャー」と呼ばれる者たちが各地で台頭し、力による弱肉強食の時代が続いている。</p>
+        </div>
+    </section>
+
+    <section id="timeline" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">02. CHRONOLOGY</h2>
+            <p class="section-subtitle">HISTORICAL RECORDS OF A.W.</p>
+        </div>
+        <div class="reveal" style="max-width: 900px; margin: 0 auto;">
+            <div class="timeline-item">
+                <div class="timeline-year">B.W.</div>
+                <div>旧地球連邦と、コロニー独立を掲げる宇宙革命軍の対立が激化。戦火は宇宙空間から地球全土へと拡大。</div>
             </div>
-
-            <div class="sidebar-bottom">
-                <p class="copyright">&copy; 創通・サンライズ</p>
+            <div class="timeline-item">
+                <div class="timeline-year">A.W.0001</div>
+                <div><strong>第7次宇宙戦争 終結。</strong><br>連邦軍の「ガンダム」投入に対し、革命軍は質量兵器として数十基のコロニーを地球へ落下させる作戦を強行。人類の99%が死滅する。</div>
             </div>
-        </aside>
+            <div class="timeline-item">
+                <div class="timeline-year">A.W.0015</div>
+                <div>現在。各地でバルチャーが活動。旧連邦の新組織「新連邦政府」設立の動きや、革命軍の残党の暗躍が確認されている。</div>
+            </div>
+        </div>
+    </section>
 
-        <main class="main-content">
-            
-            <section class="hero">
-                <h1 class="hero-title">あざやかな閃光<br>新たな世界の始まり</h1>
-                
-                <div class="dl-badges">
-                    <div class="badge">宇宙世紀 U.C.0105</div>
-                    <div class="badge">マフティー動乱</div>
-                    <div class="badge">原作：富野由悠季</div>
-                </div>
+    <section id="factions" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">03. FACTIONS</h2>
+            <p class="section-subtitle">KNOWN ORGANIZATIONS</p>
+        </div>
+        <div class="grid-3">
+            <div class="glass-panel reveal">
+                <span class="data-label">INDEPENDENT GROUP</span>
+                <h3>VULTURES (バルチャー)</h3>
+                <p>旧時代の遺産（モビルスーツや兵器）を発掘・売買して生計を立てる武装集団。中でも陸上戦艦「フリーデン」は、極めて高い戦力を保持しているとの情報が絶えない。</p>
+            </div>
+            <div class="glass-panel reveal">
+                <span class="data-label">EARTH SPHERE AUTHORITY (UNCONFIRMED)</span>
+                <h3>NEW U.N.E. (新連邦政府)</h3>
+                <p>崩壊した旧地球連邦の再建を目論む勢力。地球上の統一政府樹立を目指し、強力な軍事力を背景に各地の統合を進めようとしている。</p>
+            </div>
+            <div class="glass-panel reveal">
+                <span class="data-label">SPACE FORCES</span>
+                <h3>S.R.A. (宇宙革命軍)</h3>
+                <p>コロニー「クラウド9」を本拠地とする軍事国家。ザイデル・ラッソ率いる残党勢力は、未だに地球圏の制圧を諦めておらず、水面下で戦力増強を図っている。</p>
+            </div>
+        </div>
+    </section>
 
-                <div class="hero-video-wrapper js-fade is-active">
-                    <iframe src="https://www.youtube.com/embed/TRZJqB_qYm8?autoplay=1&mute=1&loop=1&playlist=TRZJqB_qYm8" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                
-                <p class="hero-text">
-                    第二次ネオ・ジオン戦争（シャアの反乱）から12年。<br>
-                    腐敗した地球連邦政府に対し、反地球連邦政府運動「マフティー」が立ち上がる。
-                </p>
-            </section>
+    <section id="personnel" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">04. PERSONNEL DATA</h2>
+            <p class="section-subtitle">HIGH-PRIORITY TARGETS (FREEDEN CREW)</p>
+        </div>
+        <div class="grid-3">
+            <div class="glass-panel reveal">
+                <img src="https://images.unsplash.com/photo-1542157585-ef20bfcce579?auto=format&fit=crop&w=600&q=80" alt="Garrod">
+                <h3>ガロード・ラン (Garrod Ran)</h3>
+                <p>モビルスーツの知識と操縦技術に長けたジャンク屋の少年。ティファとの出会いを機に、幻の機体「ガンダムX」のパイロットとなる。</p>
+            </div>
+            <div class="glass-panel reveal">
+                <img src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80" alt="Tiffa">
+                <h3>ティファ・アディール (Tiffa Adill)</h3>
+                <p>「ニュータイプ」の力を持つとされる謎めいた少女。その能力を巡り、様々な組織から身柄を狙われている。</p>
+            </div>
+            <div class="glass-panel reveal">
+                <img src="https://images.unsplash.com/photo-1605369572399-05d8d64a0f6e?auto=format&fit=crop&w=600&q=80" alt="Jamil">
+                <h3>ジャミル・ニート (Jamil Neate)</h3>
+                <p>バルチャー艦「フリーデン」の艦長。第7次宇宙戦争において旧連邦軍のエースとして活躍した過去を持つ。</p>
+            </div>
+        </div>
+    </section>
 
-            <section class="story">
-                <div class="sec-header js-fade">
-                    <span class="sec-en">STORY</span>
-                    <h2 class="sec-ja">物語のあらすじ</h2>
-                </div>
-                <div class="reason-box js-fade">
-                    <h3 style="color: var(--primary); font-size: 1.4rem; margin-bottom: 15px; font-weight: 900;">U.C.0105——。宇宙世紀の新たな歴史が幕を開ける</h3>
-                    <p style="font-weight:700; line-height: 2;">地球連邦政府の腐敗は地球の汚染を加速させ、強制的に民間人を宇宙へと連行する非人道的な政策「マン・ハンター」を行っていた。<br><br>そんな連邦政府高官を暗殺するという苛烈な行為で抵抗を開始したのが、反地球連邦政府運動「マフティー」だ。リーダーの名は「マフティー・ナビーユ・エリン」。その正体は、アムロ・レイとシャア・アズナブルの理念と理想、意志を宿した青年、ブライト・ノアの息子であるハサウェイ・ノアであった。</p>
-                </div>
-            </section>
+    <section id="mobile-suits" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">05. MOBILE SUITS</h2>
+            <p class="section-subtitle">TACTICAL ASSET DATABASE & COMBAT FOOTAGE</p>
+        </div>
+        
+        <div class="grid-3" style="margin-bottom: 50px;">
+            <div class="glass-panel reveal">
+                <span class="data-label">GX-9900</span>
+                <img src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=600&q=80" alt="GX">
+                <h3>GUNDAM X</h3>
+                <p>旧連邦軍の決戦用MS。月面の太陽光発電施設から送信されるマイクロウェーブを受信し、絶大な破壊力を誇る「サテライトキャノン」を発射可能。</p>
+                <a href="https://gundam.fandom.com/wiki/GX-9900_Gundam_X" target="_blank" class="ext-link">▶ EXTERNAL WIKI DATA</a>
+            </div>
+            <div class="glass-panel reveal">
+                <span class="data-label">GW-9800</span>
+                <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=600&q=80" alt="Airmaster">
+                <h3>GUNDAM AIRMASTER</h3>
+                <p>高機動戦闘に特化した可変MS。ファイターモードへの変形により、大気圏内での圧倒的な空中戦能力を発揮する。</p>
+                <a href="https://gundam-official.com/series/x" target="_blank" class="ext-link">▶ OFFICIAL SITE SEARCH</a>
+            </div>
+            <div class="glass-panel reveal">
+                <span class="data-label">GT-9600</span>
+                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80" alt="Leopard">
+                <h3>GUNDAM LEOPARD</h3>
+                <p>全身に火器を内蔵した重武装MS。インナーアームガトリング等により、単機での拠点防衛・面制圧を可能とする。</p>
+                <a href="https://www.google.com/search?q=%E3%82%AC%E3%83%B3%E3%83%80%E3%83%A0%E3%83%AC%E3%82%AA%E3%83%91%E3%83%AB%E3%83%89+%E7%94%BB%E5%83%8F" target="_blank" class="ext-link">▶ GOOGLE IMAGE SEARCH</a>
+            </div>
+        </div>
 
-            <section class="character">
-                <div class="sec-header js-fade">
-                    <span class="sec-en">CHARACTER</span>
-                    <h2 class="sec-ja">主要登場人物</h2>
-                </div>
+        <div class="reveal">
+            <span class="data-label">INTERCEPTED VIDEO SIGNAL: 4K COMBAT DATA RECORDING</span>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/DB2gMQ5ee2Y" title="Gundam X Video Data" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <p style="text-align: right; font-size: 0.8rem; margin-top: 10px; color: #666;">※Google検索経由 収集ダミー動画</p>
+        </div>
+    </section>
 
-                <div class="feature-row js-fade">
-                    <div class="feature-text">
-                        <span class="feature-label">HATHAWAY NOA</span>
-                        <h3 class="feature-title">ハサウェイ・ノア</h3>
-                        <p class="feature-desc">本作の主人公。表向きは植物農業調査官の候補生だが、その正体は反地球連邦政府運動「マフティー」のリーダー。かつてのシャアの反乱でのトラウマを抱えながらも、人類の未来のために自ら手を汚す覚悟を決めた青年。</p>
-                    </div>
-                    <div class="feature-img"><img src="https://img.youtube.com/vi/6WaOgjQ2WS0/maxresdefault.jpg" alt="ハサウェイ・ノア"></div>
-                </div>
-
-                <div class="feature-row js-fade">
-                    <div class="feature-text">
-                        <span class="feature-label">GIGI ANDALUCIA</span>
-                        <h3 class="feature-title">ギギ・アンダルシア</h3>
-                        <p class="feature-desc">ハウンゼン356便に搭乗していたミステリアスな美少女。大富豪の愛人であり、男たちを惹きつける魔性を持つ。嘘を見抜く特異な直感力があり、ハサウェイの正体すら見透かしてしまう。</p>
-                    </div>
-                    <div class="feature-img"><img src="https://img.youtube.com/vi/TRZJqB_qYm8/maxresdefault.jpg" alt="ギギ・アンダルシア"></div>
-                </div>
-
-                <div class="feature-row js-fade">
-                    <div class="feature-text">
-                        <span class="feature-label">KENNETH SLEG</span>
-                        <h3 class="feature-title">ケネス・スレッグ</h3>
-                        <p class="feature-desc">地球連邦軍の大佐。マフティー殲滅部隊「キルケー部隊」の新任司令官として赴任する。ハサウェイとはハウンゼン艦内で出会い互いに好感を持つが、やがて敵対する立場として激突することになる。</p>
-                    </div>
-                    <div class="feature-img"><img src="https://img.youtube.com/vi/hM4hTIN4JvI/maxresdefault.jpg" alt="ケネス・スレッグ"></div>
-                </div>
-            </section>
-
-            <section class="mobile-suit">
-                <div class="sec-header js-fade">
-                    <span class="sec-en">MOBILE SUIT</span>
-                    <h2 class="sec-ja">登場機体</h2>
-                </div>
-
-                <div class="feature-row js-fade">
-                    <div class="feature-text">
-                        <span class="feature-label">RX-105</span>
-                        <h3 class="feature-title">Ξガンダム<br><small style="font-size: 1.1rem; color: var(--text-muted);">（クスィーガンダム）</small></h3>
-                        <p class="feature-desc">アナハイム・エレクトロニクス社が極秘裏にマフティーからの依頼で開発した最新鋭機。ミノフスキー・フライト・ユニットを実装し、大気圏内での単独飛行と超音速戦闘を可能にした第五世代モビルスーツ。</p>
-                    </div>
-                    <div class="feature-img"><img src="https://img.youtube.com/vi/1pD57q54Z_8/maxresdefault.jpg" alt="クスィーガンダム"></div>
-                </div>
-
-                <div class="feature-row js-fade">
-                    <div class="feature-text">
-                        <span class="feature-label">RX-104FF</span>
-                        <h3 class="feature-title">ペーネロペー</h3>
-                        <p class="feature-desc">地球連邦軍キルケー部隊に配備された、オデュッセウスガンダムにFF（フィックスド・フライト）ユニットを装備した機体。Ξガンダムと同様にミノフスキー・フライト機能を持ち、圧倒的な機動力を誇る巨大MS。</p>
-                    </div>
-                    <div class="feature-img"><img src="https://img.youtube.com/vi/bQ1z8R0Q3A0/maxresdefault.jpg" alt="ペーネロペー"></div>
-                </div>
-                
-                <div class="feature-row js-fade">
-                    <div class="feature-text">
-                        <span class="feature-label">Me02R-F01</span>
-                        <h3 class="feature-title">メッサーF01型</h3>
-                        <p class="feature-desc">マフティーが主力として運用する量産型モビルスーツ。ジオン系の設計思想を受け継いだ重装甲と高い運動性を併せ持ち、ゲリラ戦や市街地での電撃的な作戦において無類の強さを発揮する。</p>
-                    </div>
-                    <div class="feature-img"><img src="https://img.youtube.com/vi/vk_S_SEQwE0/maxresdefault.jpg" alt="メッサーF01型"></div>
-                </div>
-            </section>
-
-            <section class="organization">
-                <div class="sec-header js-fade">
-                    <span class="sec-en">ORGANIZATION</span>
-                    <h2 class="sec-ja">所属組織</h2>
-                </div>
-                
-                <div class="reason-box js-fade">
-                    <h3 style="color: var(--accent); font-size: 1.5rem; margin-bottom: 15px; font-weight: 900;">反地球連邦政府運動「マフティー」</h3>
-                    <p style="font-weight:700; line-height: 1.8;">特権階級の腐敗と地球環境の汚染を激しく憂い、地球連邦政府高官の暗殺という強硬手段に出た非合法組織。<br>「マフティー・ナビーユ・エリン」という架空のリーダー像を掲げ、その過激な理念は多くの民衆から密かな支持を集めている。</p>
-                </div>
-                
-                <div class="honest-box js-fade">
-                    <h3 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 15px; font-weight: 900;">地球連邦軍 キルケー部隊</h3>
-                    <p style="font-weight:700; line-height: 1.8;">マフティーを完全に殲滅するために特別に結成された地球連邦軍の精鋭部隊。<br>新任司令官ケネス・スレッグ大佐の卓越した指揮の下、最新鋭機ペーネロペーとエースパイロットのレーン・エイム中尉を擁してマフティーを徹底的に追い詰める。</p>
-                </div>
-            </section>
-
-            <section class="movie">
-                <div class="sec-header js-fade">
-                    <span class="sec-en">MOVIE</span>
-                    <h2 class="sec-ja">公式PV・予告編</h2>
-                </div>
-                
-                <div class="video-grid js-fade">
-                    <div class="video-item">
-                        <iframe src="https://www.youtube.com/embed/6WaOgjQ2WS0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    <div class="video-item">
-                        <iframe src="https://www.youtube.com/embed/hM4hTIN4JvI" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                </div>
-            </section>
-
-            <footer class="sp-footer js-fade">
-                <a href="https://gundam-official.com/hathaway/" target="_blank">公式サイトへ</a>
-                <p>&copy; 創通・サンライズ</p>
-            </footer>
-
-        </main>
-    </div>
-
-    <div class="sp-floating-cta">
-        <a href="https://gundam-official.com/hathaway/" target="_blank" class="btn-dl-sp">公式サイトへ</a>
-    </div>
+    <footer>
+        <p>A.W.0015 VULTURE NETWORK SECURE TERMINAL</p>
+        <p style="font-size: 0.7rem; color: #444;">※This is a demonstration mockup utilizing modern web architecture.</p>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const fadeElements = document.querySelectorAll('.js-fade');
-            const fadeObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-active'); });
-            }, { root: null, rootMargin: '0px', threshold: 0.1 });
-            fadeElements.forEach(el => fadeObserver.observe(el));
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { root: null, threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+            reveals.forEach(reveal => observer.observe(reveal));
         });
     </script>
 </body>
